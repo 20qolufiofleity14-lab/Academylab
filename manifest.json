@@ -1,0 +1,22 @@
+{
+  "name": "内分泌アカデミー",
+  "short_name": "アカデミー",
+  "start_url": "./",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f0b1a",
+  "theme_color": "#0f0b1a",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
