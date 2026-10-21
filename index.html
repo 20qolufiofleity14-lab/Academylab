@@ -527,7 +527,7 @@ const HUB_DEFAULT = [
   {id:"senmon",  name:"小児科専門医",    mark:"専", color:"#d4ff3a", url:"https://20qolufiofleity14-lab.github.io/democratccc/", days:[]},
   {id:"owarai",  name:"お笑い会話",      mark:"笑", color:"#ffb547", url:"https://20qolufiofleity14-lab.github.io/owarasss/", days:[]},
   {id:"dojo",    name:"PRIME",           mark:"P",  color:"#e8322e", url:"https://20qolufiofleity14-lab.github.io/PRIME/", days:[]},
-  {id:"mini",    name:"ミニ置き場",      mark:"ミ", color:"#9b8cff", url:"https://20qolufiofleity14-lab.github.io/index/", days:[]}
+  {id:"mini",    name:"ミニ置き場",      mark:"ミ", color:"#9b8cff", url:"https://20qolufiofleity14-lab.github.io/Index/", days:[]}
 ];
 try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -539,6 +539,7 @@ HUB_DEFAULT.forEach(d=>{ const a=S.hub.find(x=>x.id===d.id); if(a && !a.url && d
 if(!S.hubAdded) S.hubAdded={};
 /* PRIMEは独立リポジトリへ移動：古いリンク（dojo/）を新しいURLに置き換える */
 { const pr=S.hub.find(x=>x.id==="dojo"); if(pr && (pr.url==="dojo/"||/\/dojo\/?$/.test(pr.url||""))){ pr.url="https://20qolufiofleity14-lab.github.io/PRIME/"; pr.name="PRIME"; pr.mark="P"; pr.color="#e8322e"; } }
+{ const mi=S.hub.find(x=>x.id==="mini"); if(mi && /\/index\/?$/.test(mi.url||"")) mi.url="https://20qolufiofleity14-lab.github.io/Index/"; }
 HUB_DEFAULT.forEach(d=>{ if((d.id==="dojo"||d.id==="mini") && !S.hubAdded[d.id] && !S.hub.find(x=>x.id===d.id)){ S.hub.push(JSON.parse(JSON.stringify(d))); } if(d.id==="dojo"||d.id==="mini") S.hubAdded[d.id]=1; });
 save();
 /* 同じ github.io に置いた各アプリの記録を読んで、やった日を自動で付ける */
