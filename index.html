@@ -526,7 +526,7 @@ const HUB_DEFAULT = [
   {id:"shugyo",  name:"修行巻物",        mark:"巻", color:"#3ee8ff", url:"https://20qolufiofleity14-lab.github.io/shugyo/", days:[]},
   {id:"senmon",  name:"小児科専門医",    mark:"専", color:"#d4ff3a", url:"https://20qolufiofleity14-lab.github.io/democratccc/", days:[]},
   {id:"owarai",  name:"お笑い会話",      mark:"笑", color:"#ffb547", url:"https://20qolufiofleity14-lab.github.io/owarasss/", days:[]},
-  {id:"dojo",    name:"PRIME",           mark:"P",  color:"#e8322e", url:"dojo/", days:[]}
+  {id:"dojo",    name:"PRIME",           mark:"P",  color:"#e8322e", url:"https://20qolufiofleity14-lab.github.io/PRIME/", days:[]}
 ];
 try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -536,6 +536,8 @@ if(!Array.isArray(S.hub)){ S.hub = JSON.parse(JSON.stringify(HUB_DEFAULT)); save
 HUB_DEFAULT.forEach(d=>{ const a=S.hub.find(x=>x.id===d.id); if(a && !a.url && d.url) a.url=d.url; });
 /* あとから増えたアプリを、すでに使っている人のマイアプリにも追加する */
 if(!S.hubAdded) S.hubAdded={};
+/* PRIMEは独立リポジトリへ移動：古いリンク（dojo/）を新しいURLに置き換える */
+{ const pr=S.hub.find(x=>x.id==="dojo"); if(pr && (pr.url==="dojo/"||/\/dojo\/?$/.test(pr.url||""))){ pr.url="https://20qolufiofleity14-lab.github.io/PRIME/"; pr.name="PRIME"; pr.mark="P"; pr.color="#e8322e"; } }
 HUB_DEFAULT.forEach(d=>{ if(d.id==="dojo" && !S.hubAdded[d.id] && !S.hub.find(x=>x.id===d.id)){ S.hub.push(JSON.parse(JSON.stringify(d))); } if(d.id==="dojo") S.hubAdded[d.id]=1; });
 save();
 /* 同じ github.io に置いた各アプリの記録を読んで、やった日を自動で付ける */
