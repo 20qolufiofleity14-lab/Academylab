@@ -526,7 +526,8 @@ const HUB_DEFAULT = [
   {id:"shugyo",  name:"修行巻物",        mark:"巻", color:"#3ee8ff", url:"https://20qolufiofleity14-lab.github.io/shugyo/", days:[]},
   {id:"senmon",  name:"小児科専門医",    mark:"専", color:"#d4ff3a", url:"https://20qolufiofleity14-lab.github.io/democratccc/", days:[]},
   {id:"owarai",  name:"お笑い会話",      mark:"笑", color:"#ffb547", url:"https://20qolufiofleity14-lab.github.io/owarasss/", days:[]},
-  {id:"dojo",    name:"PRIME",           mark:"P",  color:"#e8322e", url:"https://20qolufiofleity14-lab.github.io/PRIME/", days:[]}
+  {id:"dojo",    name:"PRIME",           mark:"P",  color:"#e8322e", url:"https://20qolufiofleity14-lab.github.io/PRIME/", days:[]},
+  {id:"mini",    name:"ミニ置き場",      mark:"ミ", color:"#9b8cff", url:"https://20qolufiofleity14-lab.github.io/index/", days:[]}
 ];
 try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -538,7 +539,7 @@ HUB_DEFAULT.forEach(d=>{ const a=S.hub.find(x=>x.id===d.id); if(a && !a.url && d
 if(!S.hubAdded) S.hubAdded={};
 /* PRIMEは独立リポジトリへ移動：古いリンク（dojo/）を新しいURLに置き換える */
 { const pr=S.hub.find(x=>x.id==="dojo"); if(pr && (pr.url==="dojo/"||/\/dojo\/?$/.test(pr.url||""))){ pr.url="https://20qolufiofleity14-lab.github.io/PRIME/"; pr.name="PRIME"; pr.mark="P"; pr.color="#e8322e"; } }
-HUB_DEFAULT.forEach(d=>{ if(d.id==="dojo" && !S.hubAdded[d.id] && !S.hub.find(x=>x.id===d.id)){ S.hub.push(JSON.parse(JSON.stringify(d))); } if(d.id==="dojo") S.hubAdded[d.id]=1; });
+HUB_DEFAULT.forEach(d=>{ if((d.id==="dojo"||d.id==="mini") && !S.hubAdded[d.id] && !S.hub.find(x=>x.id===d.id)){ S.hub.push(JSON.parse(JSON.stringify(d))); } if(d.id==="dojo"||d.id==="mini") S.hubAdded[d.id]=1; });
 save();
 /* 同じ github.io に置いた各アプリの記録を読んで、やった日を自動で付ける */
 function normDay(k){ const m=String(k).match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/); return m? (+m[1])+"-"+(+m[2])+"-"+(+m[3]) : null; }
@@ -558,7 +559,10 @@ const DETECT = {
     S.snap.owarai=tot; return {days:out, info: "スタンプ "+st+"こ", keep:true}; },
   dojo(){ const o=readLS("prime_30s_v1"); if(!o||!o.log) return {days:[],info:""};
     const out=Object.keys(o.log).filter(k=>o.log[k]&&o.log[k].lv>0);
-    return {days:out, info: out.length? "トレーニング "+out.length+"回":""}; }
+    return {days:out, info: out.length? "トレーニング "+out.length+"回":""}; },
+  mini(){ const o=readLS("mini.log"); if(!o) return {days:[],info:""};
+    const out=Object.keys(o).filter(k=>o[k]&&o[k].length);
+    return {days:out, info: out.length? "開いた日 "+out.length+"日":""}; }
 };
 function syncHub(){
   S.hub.forEach(a=>{ const f=DETECT[a.id]; if(!f) return;
@@ -999,7 +1003,7 @@ function settings(){
 
 /* ---------- 引き継ぎ（同じgithub.ioの全アプリの記録をまとめて移す） ---------- */
 const XFER_SKIP=["hub_home_url"];
-const XFER_NAMES={"endo_academy_v1":"内分泌アカデミー","shugyo_endo_v2":"修行巻物","shugyo_habit_v1":"修行巻物（習慣）","senmoni_scroll_v1":"小児科専門医","owarai-makimono-v1":"お笑い会話","prime_30s_v1":"PRIME"};
+const XFER_NAMES={"mini.log":"ミニ置き場","endo_academy_v1":"内分泌アカデミー","shugyo_endo_v2":"修行巻物","shugyo_habit_v1":"修行巻物（習慣）","senmoni_scroll_v1":"小児科専門医","owarai-makimono-v1":"お笑い会話","prime_30s_v1":"PRIME"};
 function xferExport(){ const o={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(!XFER_SKIP.includes(k)) o[k]=localStorage.getItem(k); }
   return "EAX1:"+btoa(unescape(encodeURIComponent(JSON.stringify(o)))); }
 /* 両方の端末の記録を足し合わせる：オブジェクトは中身ごと合体、数は大きいほう、配列は重複なしで合体 */
