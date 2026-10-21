@@ -983,16 +983,32 @@ function settings(){
       <button class="back" id="exb">書き出してコピー</button>
       <textarea id="exo" readonly style="display:none;width:100%;height:70px;margin-top:10px;font-size:11px;background:var(--panel-2);color:var(--ink-t,#fff);border:1px solid var(--line)"></textarea>
       <p style="margin:14px 0 6px;font-size:13px">ほかのアプリで書き出したコードを読み込む：</p>
+      <button class="back" id="imp" style="margin-bottom:8px">コピーしたコードを貼り付け</button>
       <textarea id="imi" placeholder="ここにコードを貼り付け" style="width:100%;height:70px;font-size:11px;background:var(--panel-2);color:var(--ink-t,#fff);border:1px solid var(--line)"></textarea>
-      <button class="cta" id="imb" style="margin-top:8px">読み込む</button><div id="imr" style="font-size:12px;margin-top:8px"></div></div>
+      <button class="cta" id="imb" style="margin-top:8px">読み込む</button><div id="imr" style="font-size:12px;margin-top:8px"></div>
+      <p style="margin:14px 0 6px;font-size:13px">コードが長くて貼り付けにくいときは、ファイルで移せます：</p>
+      <button class="back" id="exf">ファイルに保存</button> <button class="back" id="imf">ファイルから読み込む</button>
+      <input type="file" id="imfi" accept=".txt,text/plain" style="display:none"></div>
     <div class="tile"><div class="k">記録をリセット</div><p style="margin:4px 0 10px;font-size:13px">XP・読了・学習時間をすべて消します。元に戻せません。</p>
       <button class="danger" id="rs">リセットする</button><div id="rsc"></div></div></section>`;
   document.getElementById("exb").onclick=()=>{ const code=xferExport(); const o=document.getElementById("exo"); o.style.display="block"; o.value=code; o.select();
     (navigator.clipboard? navigator.clipboard.writeText(code):Promise.reject()).then(()=>toast("コピーしました"),()=>toast("表示されたコードを長押しでコピー")); };
-  document.getElementById("imb").onclick=()=>{ const r=xferImport(document.getElementById("imi").value); const el=document.getElementById("imr");
+  const runImport=(code)=>{ const r=xferImport(code); const el=document.getElementById("imr");
     if(!r.ok){ el.style.color="var(--bad)"; el.textContent=r.msg; return; }
     el.style.color="var(--lime)"; el.textContent=r.n+"件の記録を読み込みました（"+r.names.join("・")+"）。再読み込みします…";
     setTimeout(()=>location.reload(),1200); };
+  document.getElementById("imb").onclick=()=>runImport(document.getElementById("imi").value);
+  document.getElementById("imp").onclick=()=>{
+    if(!(navigator.clipboard&&navigator.clipboard.readText)){ toast("下の枠を長押しして「ペースト」してください"); return; }
+    navigator.clipboard.readText().then(t=>{ document.getElementById("imi").value=t; runImport(t); },()=>toast("下の枠を長押しして「ペースト」してください")); };
+  document.getElementById("exf").onclick=()=>{ const code=xferExport(); const d=new Date();
+    const name="academy-backup-"+d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+".txt";
+    const file=new File([code],name,{type:"text/plain"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){ navigator.share({files:[file]}).catch(()=>{}); return; }
+    const a=document.createElement("a"); a.href=URL.createObjectURL(file); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},1000); };
+  document.getElementById("imf").onclick=()=>document.getElementById("imfi").click();
+  document.getElementById("imfi").onchange=(e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return;
+    const rd=new FileReader(); rd.onload=()=>runImport(String(rd.result)); rd.readAsText(f); e.target.value=""; };
   document.getElementById("rs").onclick=()=>{
     document.getElementById("rsc").innerHTML=`<p style="margin:10px 0 8px;font-size:13px;color:var(--bad)">本当に消しますか？</p><button class="danger" id="rs2">消す</button> <button class="back" id="rsn">やめる</button>`;
     document.getElementById("rs2").onclick=()=>{ const keep={name:S.name,av:S.av}; S={done:{},xp:0,quiz:{c:0,n:0},days:[],mins:0,month:{},start:"",...keep};
@@ -1012,8 +1028,19 @@ function xferMerge(a,b){
   if(a&&b&&typeof a==="object"&&typeof b==="object"){ const out=Object.assign({},a); for(const k in b) out[k]= k in a? xferMerge(a[k],b[k]) : b[k]; return out; }
   if(typeof a==="number"&&typeof b==="number") return Math.max(a,b);
   return b; }
-function xferImport(code){ code=(code||"").trim().replace(/\s+/g,""); if(!code.startsWith("EAX1:")) return {ok:false,msg:"コードの形が違います（EAX1: で始まるコードを貼ってください）"};
-  let o; try{ o=JSON.parse(decodeURIComponent(escape(atob(code.slice(5))))); }catch(e){ return {ok:false,msg:"コードを読めませんでした。途中で切れていないか確認してください"}; }
+/* 貼り付けたテキストからコード本体を取り出す。空白・改行・見えない文字・全角コロン・2回貼り・EAX1:抜けにも対応 */
+function xferDecode(raw){
+  let s=String(raw||"").normalize("NFKC").replace(/[\s​-‍⁠﻿]/g,"");
+  const parts=s.split(/EAX1:/i);
+  const cands=parts.length>1? parts.slice(1) : [s];
+  for(const c of cands){ const b=c.replace(/[^A-Za-z0-9+/=]/g,"").replace(/=+$/,"");
+    if(!b) continue; const pad=b+"===".slice((b.length+3)%4);
+    try{ const o=JSON.parse(decodeURIComponent(escape(atob(pad)))); if(o&&typeof o==="object"&&!Array.isArray(o)) return o; }catch(e){} }
+  return null; }
+function xferImport(code){
+  const s=String(code||"").trim(); if(!s) return {ok:false,msg:"コードが空です。貼り付けてから押してください"};
+  const o=xferDecode(s);
+  if(!o) return {ok:false,msg:"コードを読めませんでした（"+s.length+"文字、先頭「"+s.slice(0,8)+"」）。途中で切れている可能性があります。もう一度「書き出してコピー」からやり直すか、「ファイルに保存」で移してください"};
   const names=[]; let n=0;
   for(const k in o){ if(XFER_SKIP.includes(k)) continue;
     if(k===KEY){ try{ const cur=JSON.parse(localStorage.getItem(KEY)||"{}"), inc=JSON.parse(o[k]);
