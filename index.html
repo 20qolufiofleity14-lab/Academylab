@@ -17,6 +17,11 @@
 .rest .cta{padding:7px 16px;font-size:13px}.rest p{margin:0;font-size:12px;color:var(--muted);line-height:1.6}.rest .rest-up{color:var(--cyan,#3ee8ff)}
 .cal.picking .cd{opacity:.35;cursor:not-allowed}.cal.picking .cd.can,.cal.picking .cd.fz{opacity:1;cursor:pointer}.cal.picking .cd.can{outline:1px dashed var(--muted);outline-offset:-2px}
 .rest-nav{display:flex;gap:6px;margin-left:auto;margin-right:8px}.rest-nav .back{padding:3px 12px}.rest-nav .back[disabled]{opacity:.3}
+.wal-tk b{font-family:var(--f-num);font-size:20px;color:var(--cyan,#3ee8ff);margin-left:4px}
+.rest-float{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));width:min(528px,calc(100% - 32px));z-index:60;display:flex;align-items:center;gap:8px;background:rgba(20,14,34,.96);border:1px solid var(--cyan,#3ee8ff);box-shadow:0 0 18px rgba(62,232,255,.35);padding:10px 12px;border-radius:14px;backdrop-filter:blur(6px)}
+.rf-n{display:flex;align-items:baseline;gap:4px;flex:1;min-width:0;flex-wrap:wrap}.rf-n span{font-size:11px;color:var(--muted)}.rf-n b{font-family:var(--f-num);font-size:26px;line-height:1;color:var(--cyan,#3ee8ff)}.rf-n em{font-style:normal;font-size:11px;color:var(--muted);flex-basis:100%}
+.rf-n b.pop{animation:rfpop .4s ease}@keyframes rfpop{50%{transform:scale(1.35)}}
+.rest-float .back{padding:7px 10px;font-size:12px;white-space:nowrap}.rest-float .back[disabled]{opacity:.35}.rest-float .cta{padding:7px 14px;font-size:13px;white-space:nowrap}
 </style></head><body>
 <title>内分泌アカデミー</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -715,7 +720,6 @@ function walletBalance(){ return Math.max(0, earnedTotal()-(W.spent||0)); }
 function todayEarn(){ return dayTotal(earnByDay()[dkey(new Date())]||{}); }
 function whist(t,c){ W.hist.unshift({d:dkey(new Date()),t,c}); W.hist=W.hist.slice(0,40); }
 function buyTicket(){
-  if(W.tickets>=TICKET_MAX){ toast("チケットは"+TICKET_MAX+"枚まで持てます"); return false; }
   if(walletBalance()<TICKET_PRICE){ toast("コインがあと "+(TICKET_PRICE-walletBalance())+" 足りません"); return false; }
   W.spent+=TICKET_PRICE; W.tickets++; whist("お休みチケットを購入",-TICKET_PRICE); wsave(); return true;
 }
@@ -729,11 +733,13 @@ function gapDays(){
 }
 function useTicket(k){
   if(W.freeze[k]) return true;
-  if(W.tickets<=0 && !buyTicket()) return false;
+  if(W.tickets<=0) return false;
   W.tickets--; W.freeze[k]=1; whist(fmtDay(k)+" をお休みに（チケット1枚）",0); wsave(); return true;
 }
 const REST_AHEAD=31;
-function refundTicket(){ if(W.tickets<TICKET_MAX) W.tickets++; else W.spent=Math.max(0,(W.spent||0)-TICKET_PRICE); }
+function refundTicket(){ W.tickets++; }
+/* 途切れた日をまとめて守る：足りない分だけ買ってから使う */
+function fixGaps(){ const g=gapDays(); const need=g.length-W.tickets; for(let i=0;i<need;i++){ if(!buyTicket()) return false; } for(const k of g.slice().reverse()) useTicket(k); return true; }
 function cancelRest(k){ if(!W.freeze[k]) return; delete W.freeze[k]; refundTicket(); whist(fmtDay(k)+" のお休みを取り消し（チケットを返却）",0); wsave(); }
 /* お休みにした日に結局がんばった場合は、チケットを自動で返す */
 function settleRest(){ const U=unionDays(); let n=0; for(const k in W.freeze){ if(U.has(k)){ delete W.freeze[k]; refundTicket(); n++; } } if(n){ whist("お休み予定の日にがんばったので、チケットを"+n+"枚返却",0); wsave(); } }
@@ -745,23 +751,24 @@ function pickRest(k){ const r=restInfo(k);
   if(r==="far"){ toast(REST_AHEAD+"日先までえらべます"); return; }
   if(r==="done"){ toast("この日はもう記録があります"); return; }
   if(W.freeze[k]){ cancelRest(k); toast(fmtDay(k)+" のお休みを取り消しました"); return; }
-  if(useTicket(k)) toast(fmtDay(k)+" をお休みにしました"); }
+  if(W.tickets<=0){ toast("チケットがありません。「＋1枚買う」で買えます"); return; }
+  if(useTicket(k)) toast(fmtDay(k)+" をお休みに（のこり "+W.tickets+"枚）"); }
 function fmtDay(k){ const a=k.split("-"); return (+a[1])+"/"+(+a[2]); }
 function shiftToggle(k){ if(W.shift[k]){ delete W.shift[k]; whist(fmtDay(k)+" のバイトを取り消し",-SHIFT_COIN); } else { W.shift[k]=1; whist(fmtDay(k)+" バイト",SHIFT_COIN); } wsave(); }
 /* ホームに出す財布のカード */
 function walletCard(){
   const bal=walletBalance(), te=todayEarn(), gaps=gapDays(), tk=dkey(new Date());
-  const canFix = gaps.length && gaps.length<=W.tickets+Math.min(TICKET_MAX-W.tickets, Math.floor(bal/TICKET_PRICE));
+  const need=Math.max(0,gaps.length-W.tickets), canFix = gaps.length && need*TICKET_PRICE<=bal;
   return `<div class="wal">
     <div class="wal-top"><div><div class="eyebrow">COINS</div><div class="wal-bal"><b>${bal.toLocaleString()}</b><span>コイン</span>${te?`<em>今日 +${te}</em>`:""}</div></div>
-      <div class="wal-tk" aria-label="お休みチケット ${W.tickets}枚">${[...Array(TICKET_MAX)].map((_,i)=>`<i class="${i<W.tickets?"on":""}"></i>`).join("")}<span>チケット</span></div></div>
+      <div class="wal-tk" aria-label="お休みチケット ${W.tickets}枚"><i class="${W.tickets?"on":""}"></i><b>${W.tickets}</b><span>枚</span></div></div>
     ${gaps.length? `<div class="wal-gap"><p>${gaps.map(fmtDay).reverse().join("・")} がお休みで、連続が途切れそうです。</p>
-      ${canFix? `<button class="cta" id="wFix">チケット${gaps.length}枚で守る</button>`:`<p class="wal-s">コインがたまれば、${BACK_DAYS}日以内ならあとからでも守れます</p>`}</div>`:""}
+      ${canFix? `<button class="cta" id="wFix">${need? "チケットを"+need+"枚買って守る（"+need*TICKET_PRICE+"コイン）" : "チケット"+gaps.length+"枚で守る"}</button>`:`<p class="wal-s">コインがたまれば、${BACK_DAYS}日以内ならあとからでも守れます</p>`}</div>`:""}
     <div class="wal-row"><button class="wal-shift ${W.shift[tk]?"on":""}" id="wShift">${W.shift[tk]?"✓ 今日バイト行った":"今日バイト行った ＋"+SHIFT_COIN}</button><button class="back" id="wMore">くわしく ›</button></div>
   </div>`;
 }
 function bindWallet(after){
-  const f=document.getElementById("wFix"); if(f) f.onclick=()=>{ const g=gapDays(); for(const k of g.slice().reverse()){ if(!useTicket(k)) break; } toast("連続日数を守りました"); after(); };
+  const f=document.getElementById("wFix"); if(f) f.onclick=()=>{ if(fixGaps()) toast("連続日数を守りました"); after(); };
   const s=document.getElementById("wShift"); if(s) s.onclick=()=>{ shiftToggle(dkey(new Date())); if(W.shift[dkey(new Date())]) toast("おつかれさま！ +"+SHIFT_COIN+" コイン"); after(); };
   const mo=document.getElementById("wMore"); if(mo) mo.onclick=()=>{ walletScreen(); window.scrollTo(0,0); };
 }
@@ -774,11 +781,11 @@ function walletScreen(){
     <div class="hub-h"><div><div class="eyebrow">WALLET</div><h1 class="title">コイン財布</h1></div><button class="back" id="wBack">‹ もどる</button></div>
     <div class="grid2">
       <div class="tile"><div class="k">残高</div><div class="v">${bal.toLocaleString()}<small> コイン</small></div></div>
-      <div class="tile"><div class="k">お休みチケット</div><div class="v">${W.tickets}<small> / ${TICKET_MAX}枚</small></div></div>
+      <div class="tile"><div class="k">お休みチケット</div><div class="v">${W.tickets}<small> 枚</small></div></div>
     </div>
     <div class="tile"><div class="k">チケットを買う（${TICKET_PRICE}コイン）</div>
-      <p style="margin:4px 0 10px;font-size:13px">チケット1枚で1日お休みにでき、全体の連続日数が切れません。お休みの日は、ホームのカレンダーの下の「お休みの日を選ぶ」から指定できます（${BACK_DAYS}日前〜${REST_AHEAD}日先）。持てるのは${TICKET_MAX}枚まで。</p>
-      <button class="cta" id="wBuy" ${W.tickets>=TICKET_MAX||bal<TICKET_PRICE?"disabled":""}>1枚買う</button>
+      <p style="margin:4px 0 10px;font-size:13px">チケット1枚で1日お休みにでき、全体の連続日数が切れません。お休みの日は、ホームのカレンダーの下の「お休みの日を選ぶ」から指定できます（${BACK_DAYS}日前〜${REST_AHEAD}日先）。何枚でも持てます。</p>
+      <button class="cta" id="wBuy" ${bal<TICKET_PRICE?"disabled":""}>1枚買う</button>
       ${gaps.length? `<p style="margin:12px 0 6px;font-size:13px">${gaps.map(fmtDay).reverse().join("・")} がお休みです（チケット${gaps.length}枚で連続がつながります）</p><button class="back" id="wFix2">チケットで守る</button>`:""}</div>
     <div class="tile"><div class="k">バイトした日（押し忘れは${BACK_DAYS}日前までOK）</div>
       <div class="wal-days">${days.slice().reverse().map(k=>`<button class="wal-shift sm ${W.shift[k]?"on":""}" data-sh="${k}">${fmtDay(k)}${k===days[0]?"（今日）":""}</button>`).join("")}</div></div>
@@ -790,7 +797,7 @@ function walletScreen(){
   </section>`;
   document.getElementById("wBack").onclick=()=>setTab(tab);
   document.getElementById("wBuy").onclick=()=>{ if(buyTicket()) toast("チケットを1枚買いました"); walletScreen(); };
-  const f2=document.getElementById("wFix2"); if(f2) f2.onclick=()=>{ const g=gapDays(); let ok=true; for(const k of g.slice().reverse()){ if(!useTicket(k)){ ok=false; break; } } if(ok) toast("連続日数を守りました"); walletScreen(); };
+  const f2=document.getElementById("wFix2"); if(f2) f2.onclick=()=>{ if(fixGaps()) toast("連続日数を守りました"); walletScreen(); };
   app.querySelectorAll("[data-sh]").forEach(b=>b.onclick=()=>{ shiftToggle(b.dataset.sh); walletScreen(); });
 }
 
@@ -843,10 +850,10 @@ function hcM(){ const d=new Date(); return new Date(d.getFullYear(), d.getMonth(
 function restBar(){
   const up=Object.keys(W.freeze).filter(k=>pkeyA(k)>=pkeyA(dkey(new Date()))).sort((a,b)=>pkeyA(a)-pkeyA(b));
   return `<div class="rest ${restMode?"on":""}">
-    <div class="rest-h"><div><b>お休みの日</b><span>チケット ${W.tickets}/${TICKET_MAX}枚 · 1日1枚</span></div><button class="${restMode?"cta":"back"}" id="restBtn">${restMode?"選び終わる":"お休みの日を選ぶ"}</button></div>
-    ${restMode? `<p>上のカレンダーで日付をタップ → お休みに。もう一度タップで取り消し（チケットは戻ります）。${BACK_DAYS}日前〜${REST_AHEAD}日先まで。チケットがなければ${TICKET_PRICE}コインで自動で買います。</p>`:""}
+    <div class="rest-h"><div><b>お休みの日</b><span>チケット ${W.tickets}枚 · 1日1枚</span></div><button class="${restMode?"cta":"back"}" id="restBtn">${restMode?"選び終わる":"お休みの日を選ぶ"}</button></div>
+    ${restMode? `<p>上のカレンダーで日付をタップ → お休みに。もう一度タップで取り消し（チケットは戻ります）。${BACK_DAYS}日前〜${REST_AHEAD}日先まで。チケットは1枚${TICKET_PRICE}コイン。</p>`:""}
     ${up.length? `<p class="rest-up">予定：${up.map(fmtDay).join("・")}</p>`:""}
-  </div>`;
+  </div>${restMode? `<div class="rest-float"><div class="rf-n"><span>のこりチケット</span><b id="rfN">${W.tickets}</b><span>枚</span><em>コイン ${walletBalance().toLocaleString()}</em></div><button class="back" id="restBuy" ${walletBalance()<TICKET_PRICE?"disabled":""}>＋1枚買う</button><button class="cta" id="restDone">完了</button></div>`:""}`;
 }
 function home(){
   settleRest();
@@ -888,6 +895,8 @@ function home(){
   const rb=document.getElementById("restBtn"); if(rb) rb.onclick=()=>{ restMode=!restMode; hcOff=0; const y=window.scrollY; home(); window.scrollTo(0,y); };
   const hp=document.getElementById("hmP"), hn=document.getElementById("hmN"); const rr=()=>{ const y=window.scrollY; home(); window.scrollTo(0,y); };
   if(hp) hp.onclick=()=>{ if(hcOff>0){ hcOff--; rr(); } }; if(hn) hn.onclick=()=>{ if(hcOff<1){ hcOff++; rr(); } };
+  const rbuy=document.getElementById("restBuy"); if(rbuy) rbuy.onclick=()=>{ if(buyTicket()) toast("チケットを1枚買いました"); const y=window.scrollY; home(); window.scrollTo(0,y); const n=document.getElementById("rfN"); if(n){ n.classList.add("pop"); } };
+  const rdn=document.getElementById("restDone"); if(rdn) rdn.onclick=()=>{ restMode=false; hcOff=0; const y=window.scrollY; home(); window.scrollTo(0,y); };
   if(restMode){ const cal=app.querySelector(".home-cal .cal"); cal.classList.add("picking"); cal.querySelectorAll(".cd[data-k]").forEach(c=>{ const r=restInfo(c.dataset.k); if(r==="ok") c.classList.add("can"); c.onclick=()=>{ pickRest(c.dataset.k); const y=window.scrollY; home(); window.scrollTo(0,y); }; }); }
 }
 
