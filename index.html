@@ -1,5 +1,18 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="アカデミー"><meta name="theme-color" content="#0f0b1a"><style>html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style></head><body>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="アカデミー"><meta name="theme-color" content="#0f0b1a"><style>html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}.wal{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.wal-top{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.wal-bal{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}.wal-bal b{font-family:var(--f-num);font-size:30px;line-height:1.1;color:var(--lime,#d4ff3a)}.wal-bal span{font-size:13px;color:var(--muted)}.wal-bal em{font-style:normal;font-size:12px;color:var(--cyan,#3ee8ff);margin-left:4px}
+.wal-tk{display:flex;align-items:center;gap:5px}.wal-tk i{width:22px;height:14px;border:1px dashed var(--muted);border-radius:3px}.wal-tk i.on{border:0;background:linear-gradient(120deg,var(--cyan,#3ee8ff),var(--lime,#d4ff3a));box-shadow:0 0 8px rgba(62,232,255,.5)}.wal-tk span{font-size:11px;color:var(--muted);margin-left:2px}
+.wal-gap{border-left:3px solid var(--hot,#ff4fa3);padding:4px 0 4px 10px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}.wal-gap p{margin:0;font-size:13px}.wal-s{color:var(--muted);font-size:12px!important}
+.wal-row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.wal-shift{background:none;border:1px solid var(--line);border-radius:999px;padding:8px 14px;color:var(--fg,#fff);font-size:13px;cursor:pointer}.wal-shift.on{background:rgba(212,255,58,.14);border-color:var(--lime,#d4ff3a);color:var(--lime,#d4ff3a);font-weight:700}.wal-shift.sm{padding:6px 10px;font-size:12px}
+.wal-days{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.wal-bar{display:grid;grid-template-columns:92px 1fr 32px;align-items:center;gap:8px;font-size:12px;margin-top:8px}.wal-bar i{height:8px;background:linear-gradient(90deg,var(--hot,#ff4fa3),var(--lime,#d4ff3a));min-width:4px}.wal-bar b{text-align:right;font-family:var(--f-num)}
+.wal-rule{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}.wal-rule td{padding:5px 0;border-bottom:1px solid var(--line)}.wal-rule td:last-child{text-align:right;color:var(--lime,#d4ff3a)}
+.wal-h{display:grid;grid-template-columns:40px 1fr auto;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px solid var(--line)}.wal-h span:first-child{color:var(--muted)}
+.cd.fz{background:repeating-linear-gradient(-45deg,rgba(62,232,255,.18) 0 4px,transparent 4px 8px);outline:1px dashed rgba(62,232,255,.6);outline-offset:-1px}
+.cta[disabled]{opacity:.4;pointer-events:none}
+</style></head><body>
 <title>内分泌アカデミー</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -626,7 +639,7 @@ function appStreak(a){
   return n;
 }
 function unionDays(){ const s=new Set(S.days); S.hub.forEach(a=>{ if(!a.self) appDays(a).forEach(d=>s.add(d)); }); return s; }
-function unionStreak(){ const set=unionDays(); let n=0; const d=new Date(); if(!set.has(dkey(d))) d.setDate(d.getDate()-1); while(set.has(dkey(d))){ n++; d.setDate(d.getDate()-1);} return n; }
+function unionStreak(){ const set=unionDays(); try{ for(const k in W.freeze) set.add(k); }catch(e){} let n=0; const d=new Date(); if(!set.has(dkey(d))) d.setDate(d.getDate()-1); while(set.has(dkey(d))){ n++; d.setDate(d.getDate()-1);} return n; }
 function monthDays(y,m){ return [...unionDays()].filter(s=>s.startsWith(y+"-"+(m+1)+"-")).length; }
 const STAR_DAYS=[3,7,12,18,25];
 function week(a){ const set=new Set(appDays(a)); let n=0; const d=new Date(); for(let i=0;i<7;i++){ if(set.has(dkey(d))) n++; d.setDate(d.getDate()-1);} return n; }
@@ -659,6 +672,107 @@ function nextLesson(){
   if(last){ const n=nextInChap(last); if(n) return n; }
   for(const c of CHAPTERS){ const n=nextInChap(c); if(n) return n; }
   return null;
+}
+
+/* ---------- コイン財布（全アプリ共通）：各アプリの記録からコインを計算し、お休みチケットに使う ---------- */
+const WKEY="lab_wallet_v1";
+const TICKET_PRICE=10, TICKET_MAX=2, SHIFT_COIN=5, BACK_DAYS=7;
+let W={spent:0, tickets:0, freeze:{}, shift:{}, hist:[], seenBal:null, asked:""};
+try{ const r=localStorage.getItem(WKEY); if(r) W=Object.assign(W, JSON.parse(r)); }catch(e){}
+function wsave(){ W.bal=walletBalance(); W.updated=Date.now(); try{ localStorage.setItem(WKEY, JSON.stringify(W)); }catch(e){} }
+/* 1日ごとの獲得コイン（努力の重さで差をつける） */
+const EARN_RULES=[
+  ["アカデミーを開く","1"],["アカデミーで1話読む","3（2話目から +2、1日 +6まで）"],
+  ["修行巻物を解く","3 ＋10問ごとに +1（+3まで）"],["小児科専門医","3"],["お笑い会話","2"],
+  ["PRIME 筋トレ","ミニ 2／ふつう 4／がっつり 6"],["PRIME 体重・3行日記","各 1"],["ミニ置き場","1"],["バイト（1回）",String(SHIFT_COIN)]
+];
+function earnByDay(){
+  const m={}; const add=(d,src,c)=>{ d=normDay(d); if(!d||!(c>0)) return; (m[d]=m[d]||{})[src]=((m[d]||{})[src]||0)+c; };
+  (S.opened||[]).forEach(d=>add(d,"アカデミー",1));
+  S.days.forEach(d=>{ const n=(S.lessons&&S.lessons[d])||1; add(d,"アカデミー",3+Math.min(6,2*(n-1))); });
+  const sh=readLS("shugyo_endo_v2")||{}, hb=readLS("shugyo_habit_v1")||{}; const shd=new Set();
+  (sh.days||[]).forEach(d=>shd.add(normDay(d))); (hb.days||[]).forEach(d=>shd.add(normDay(d)));
+  for(const k in (sh.log||{})) if(sh.log[k]&&sh.log[k].a>0) shd.add(normDay(k));
+  shd.forEach(d=>{ if(!d) return; const lg=(sh.log||{})[d]; const a=lg&&lg.a||0; add(d,"修行巻物",3+Math.min(3,Math.floor(a/10))); });
+  const sn=readLS("senmoni_scroll_v1")||{}; for(const k in (sn.log||{})) if(sn.log[k]) add(k,"小児科専門医",3);
+  const ow=S.hub.find(x=>x.id==="owarai"); if(ow) (ow.auto||[]).forEach(d=>add(d,"お笑い会話",2));
+  const pr=readLS("prime_30s_v1")||{};
+  for(const k in (pr.log||{})){ const lv=pr.log[k]&&pr.log[k].lv; if(lv>0) add(k,"PRIME",lv>=3?6:lv===2?4:2); }
+  for(const k in (pr.w||{})) if(pr.w[k]) add(k,"PRIME",1);
+  for(const k in (pr.good||{})) if(Array.isArray(pr.good[k])&&pr.good[k].some(x=>x)) add(k,"PRIME",1);
+  const mi=readLS("mini.log")||{}; for(const k in mi) if(mi[k]&&mi[k].length) add(k,"ミニ置き場",1);
+  for(const k in W.shift) if(W.shift[k]) add(k,"バイト",SHIFT_COIN*(+W.shift[k]||1));
+  return m;
+}
+function dayTotal(o){ let s=0; for(const k in o) s+=o[k]; return s; }
+function earnedTotal(){ const m=earnByDay(); let s=0; for(const d in m) s+=dayTotal(m[d]); return s; }
+function walletBalance(){ return Math.max(0, earnedTotal()-(W.spent||0)); }
+function todayEarn(){ return dayTotal(earnByDay()[dkey(new Date())]||{}); }
+function whist(t,c){ W.hist.unshift({d:dkey(new Date()),t,c}); W.hist=W.hist.slice(0,40); }
+function buyTicket(){
+  if(W.tickets>=TICKET_MAX){ toast("チケットは"+TICKET_MAX+"枚まで持てます"); return false; }
+  if(walletBalance()<TICKET_PRICE){ toast("コインがあと "+(TICKET_PRICE-walletBalance())+" 足りません"); return false; }
+  W.spent+=TICKET_PRICE; W.tickets++; whist("お休みチケットを購入",-TICKET_PRICE); wsave(); return true;
+}
+/* 連続が途切れている日（今日より前・7日以内・その前に続きがある日）を新しい順に */
+function gapDays(){
+  const U=unionDays(), F=W.freeze; const out=[]; const d=new Date(); d.setDate(d.getDate()-1);
+  for(let i=0;i<BACK_DAYS;i++){ const k=dkey(d); if(U.has(k)||F[k]) break; out.push(k); d.setDate(d.getDate()-1); }
+  /* その手前にやった日がなければ、守る連続がないので出さない */
+  const before=new Date(); before.setDate(before.getDate()-1-out.length);
+  return (out.length && (U.has(dkey(before))||F[dkey(before)]))? out : [];
+}
+function useTicket(k){
+  if(W.freeze[k]) return true;
+  if(W.tickets<=0 && !buyTicket()) return false;
+  W.tickets--; W.freeze[k]=1; whist(fmtDay(k)+" をチケットで守った",0); wsave(); return true;
+}
+function fmtDay(k){ const a=k.split("-"); return (+a[1])+"/"+(+a[2]); }
+function shiftToggle(k){ if(W.shift[k]){ delete W.shift[k]; whist(fmtDay(k)+" のバイトを取り消し",-SHIFT_COIN); } else { W.shift[k]=1; whist(fmtDay(k)+" バイト",SHIFT_COIN); } wsave(); }
+/* ホームに出す財布のカード */
+function walletCard(){
+  const bal=walletBalance(), te=todayEarn(), gaps=gapDays(), tk=dkey(new Date());
+  const canFix = gaps.length && gaps.length<=W.tickets+Math.min(TICKET_MAX-W.tickets, Math.floor(bal/TICKET_PRICE));
+  return `<div class="wal">
+    <div class="wal-top"><div><div class="eyebrow">COINS</div><div class="wal-bal"><b>${bal.toLocaleString()}</b><span>コイン</span>${te?`<em>今日 +${te}</em>`:""}</div></div>
+      <div class="wal-tk" aria-label="お休みチケット ${W.tickets}枚">${[...Array(TICKET_MAX)].map((_,i)=>`<i class="${i<W.tickets?"on":""}"></i>`).join("")}<span>チケット</span></div></div>
+    ${gaps.length? `<div class="wal-gap"><p>${gaps.map(fmtDay).reverse().join("・")} がお休みで、連続が途切れそうです。</p>
+      ${canFix? `<button class="cta" id="wFix">チケット${gaps.length}枚で守る</button>`:`<p class="wal-s">コインがたまれば、${BACK_DAYS}日以内ならあとからでも守れます</p>`}</div>`:""}
+    <div class="wal-row"><button class="wal-shift ${W.shift[tk]?"on":""}" id="wShift">${W.shift[tk]?"✓ 今日バイト行った":"今日バイト行った ＋"+SHIFT_COIN}</button><button class="back" id="wMore">くわしく ›</button></div>
+  </div>`;
+}
+function bindWallet(after){
+  const f=document.getElementById("wFix"); if(f) f.onclick=()=>{ const g=gapDays(); for(const k of g.slice().reverse()){ if(!useTicket(k)) break; } toast("連続日数を守りました"); after(); };
+  const s=document.getElementById("wShift"); if(s) s.onclick=()=>{ shiftToggle(dkey(new Date())); if(W.shift[dkey(new Date())]) toast("おつかれさま！ +"+SHIFT_COIN+" コイン"); after(); };
+  const mo=document.getElementById("wMore"); if(mo) mo.onclick=()=>{ walletScreen(); window.scrollTo(0,0); };
+}
+function walletScreen(){
+  const bal=walletBalance(), m=earnByDay(), gaps=gapDays();
+  const days=[]; const d=new Date(); for(let i=0;i<BACK_DAYS;i++){ days.push(dkey(d)); d.setDate(d.getDate()-1); }
+  const wk={}; days.forEach(k=>{ const o=m[k]||{}; for(const s in o) wk[s]=(wk[s]||0)+o[s]; });
+  const wkTot=dayTotal(wk), wkMax=Math.max(1,...Object.values(wk));
+  app.innerHTML=`<section class="screen">
+    <div class="hub-h"><div><div class="eyebrow">WALLET</div><h1 class="title">コイン財布</h1></div><button class="back" id="wBack">‹ もどる</button></div>
+    <div class="grid2">
+      <div class="tile"><div class="k">残高</div><div class="v">${bal.toLocaleString()}<small> コイン</small></div></div>
+      <div class="tile"><div class="k">お休みチケット</div><div class="v">${W.tickets}<small> / ${TICKET_MAX}枚</small></div></div>
+    </div>
+    <div class="tile"><div class="k">チケットを買う（${TICKET_PRICE}コイン）</div>
+      <p style="margin:4px 0 10px;font-size:13px">お休みした日を1日うめて、全体の連続日数が切れないようにします。${BACK_DAYS}日以内ならあとからでも使えます。持てるのは${TICKET_MAX}枚まで。</p>
+      <button class="cta" id="wBuy" ${W.tickets>=TICKET_MAX||bal<TICKET_PRICE?"disabled":""}>1枚買う</button>
+      ${gaps.length? `<p style="margin:12px 0 6px;font-size:13px">${gaps.map(fmtDay).reverse().join("・")} がお休みです（チケット${gaps.length}枚で連続がつながります）</p><button class="back" id="wFix2">チケットで守る</button>`:""}</div>
+    <div class="tile"><div class="k">バイトした日（押し忘れは${BACK_DAYS}日前までOK）</div>
+      <div class="wal-days">${days.slice().reverse().map(k=>`<button class="wal-shift sm ${W.shift[k]?"on":""}" data-sh="${k}">${fmtDay(k)}${k===days[0]?"（今日）":""}</button>`).join("")}</div></div>
+    <div class="tile"><div class="k">この7日でかせいだコイン：${wkTot}</div>
+      ${Object.keys(wk).length? Object.entries(wk).sort((a,b)=>b[1]-a[1]).map(([s,c])=>`<div class="wal-bar"><span>${s}</span><i style="width:${c/wkMax*100}%"></i><b>${c}</b></div>`).join("") : `<p style="font-size:13px;margin:6px 0 0">まだありません。1話読むだけでも貯まります。</p>`}</div>
+    <div class="tile"><div class="k">もらえるコイン</div><table class="wal-rule">${EARN_RULES.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</table>
+      <p style="font-size:12px;margin:8px 0 0;color:var(--muted)">各アプリの記録から自動で計算します。これまでの記録の分も入っています。</p></div>
+    ${W.hist.length? `<div class="tile"><div class="k">最近の出来事</div>${W.hist.slice(0,10).map(h=>`<div class="wal-h"><span>${fmtDay(h.d)}</span><span>${h.t}</span><b>${h.c>0?"+"+h.c:h.c<0?h.c:""}</b></div>`).join("")}</div>`:""}
+  </section>`;
+  document.getElementById("wBack").onclick=()=>setTab(tab);
+  document.getElementById("wBuy").onclick=()=>{ if(buyTicket()) toast("チケットを1枚買いました"); walletScreen(); };
+  const f2=document.getElementById("wFix2"); if(f2) f2.onclick=()=>{ const g=gapDays(); let ok=true; for(const k of g.slice().reverse()){ if(!useTicket(k)){ ok=false; break; } } if(ok) toast("連続日数を守りました"); walletScreen(); };
+  app.querySelectorAll("[data-sh]").forEach(b=>b.onclick=()=>{ shiftToggle(b.dataset.sh); walletScreen(); });
 }
 
 /* ---------- render ---------- */
@@ -723,6 +837,7 @@ function home(){
         .filter((o,i,a)=>coOf(o.c).id===S.course || a.findIndex(z=>coOf(z.c)===coOf(o.c))===i)
         .sort((a,b)=>(coOf(a.c).id===S.course)-(coOf(b.c).id===S.course));
       return others.length? `<div class="alt"><div class="eyebrow">気分を変えて、別の章から</div><div class="alt-row">${others.map(o=>`<button class="alt-c" data-l="${o.l.id}"><span>${COURSES.find(x=>x.chapters.includes(o.c)).id!==S.course? COURSES.find(x=>x.chapters.includes(o.c)).short+" · ":""}${o.c.n} ${o.c.t}</span><b>${o.l.t}</b></button>`).join("")}</div></div>`:""; })()}
+    ${walletCard()}
     <div class="grid2">
       <div class="tile streak"><div class="k">継続日数（全アプリ）</div><div class="v">${unionStreak()}<small style="color:#3a0f22"> 日</small></div></div>
       <div class="tile"><div class="k">学習完了</div><div class="v">${done}<small>/${tp}</small></div><div class="bar"><i style="width:${done/tp*100}%"></i></div></div>
@@ -738,13 +853,15 @@ function home(){
   const g=document.getElementById("go"); if(g) g.onclick=()=>openLesson(nx.c, nx.l);
   app.querySelectorAll(".alt-c").forEach(b=>b.onclick=()=>{ const c=ALL_CH.find(x=>x.lessons.some(l=>l.id===b.dataset.l)); openLesson(c, c.lessons.find(l=>l.id===b.dataset.l)); });
   const hc=document.getElementById("hcal"); if(hc) hc.onclick=()=>{ calOff=0; calendar(); window.scrollTo(0,0); };
+  bindWallet(home);
 }
 
 function hubScreen(){
   app.innerHTML=`<section class="screen">
-    <div class="hub-h"><div><div class="eyebrow">MY APPS</div><h1 class="title">マイアプリ</h1></div><div style="display:flex;gap:6px"><button class="back" id="hubCal">カレンダー</button><button class="back" id="hubEdit">編集</button></div></div>
+    <div class="hub-h"><div><div class="eyebrow">MY APPS</div><h1 class="title">マイアプリ</h1></div><div style="display:flex;gap:6px"><button class="back" id="hubWal">コイン</button><button class="back" id="hubCal">カレンダー</button><button class="back" id="hubEdit">編集</button></div></div>
     <div class="hub">${S.hub.map(hubRing).join("")}</div></section>`;
   bindHub();
+  document.getElementById("hubWal").onclick=()=>{ walletScreen(); window.scrollTo(0,0); };
 }
 
 function scrollLink(label){ const a=(S.hub||[]).find(x=>x.id==="shugyo"); return a&&a.url? `<a class="go big-go" href="${a.url}">${label}</a>`:""; }
@@ -861,6 +978,7 @@ function runQuiz(c,l){
     S.lastChap=c.id; { const co=COURSES.find(x=>x.chapters.includes(c)); if(co) S.course=co.id; }
     addMinutes(l.min);
     const t=todayStr(); if(!S.days.includes(t)) S.days.push(t);
+    S.lessons=S.lessons||{}; S.lessons[t]=(S.lessons[t]||0)+1;
     save(); hdr();
     box.innerHTML = `<div class="finish"><div class="eyebrow">レッスン完了</div>
       <div class="big">${first? "+"+gain+" XP":"復習完了"}</div>
@@ -1010,7 +1128,7 @@ function calGrid(y,m,isCur){
   for(let i=1;i<=last;i++){
     const k=y+"-"+(m+1)+"-"+i; const isT = isCur && i===now.getDate();
     const dots=sets.filter(x=>x.s.has(k)).map(x=>`<i style="background:${x.a.color};box-shadow:0 0 5px ${x.a.color}"></i>`).join("");
-    cells+=`<div class="cd ${U.has(k)?"on":""} ${isT?"is-today":""}"><span>${i}</span><div class="dots">${dots}</div></div>`;
+    cells+=`<div class="cd ${U.has(k)?"on":(W.freeze[k]?"fz":"")} ${isT?"is-today":""}"><span>${i}</span><div class="dots">${dots}</div></div>`;
   }
   return `<div class="cal">${cells}</div>`;
 }
@@ -1078,7 +1196,7 @@ function settings(){
 
 /* ---------- 引き継ぎ（同じgithub.ioの全アプリの記録をまとめて移す） ---------- */
 const XFER_SKIP=["hub_home_url"];
-const XFER_NAMES={"mini.log":"ミニ置き場","endo_academy_v1":"内分泌アカデミー","shugyo_endo_v2":"修行巻物","shugyo_habit_v1":"修行巻物（習慣）","senmoni_scroll_v1":"小児科専門医","owarai-makimono-v1":"お笑い会話","prime_30s_v1":"PRIME"};
+const XFER_NAMES={"mini.log":"ミニ置き場","endo_academy_v1":"内分泌アカデミー","shugyo_endo_v2":"修行巻物","shugyo_habit_v1":"修行巻物（習慣）","senmoni_scroll_v1":"小児科専門医","owarai-makimono-v1":"お笑い会話","prime_30s_v1":"PRIME","lab_wallet_v1":"コイン財布"};
 function xferExport(){ const o={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(!XFER_SKIP.includes(k)) o[k]=localStorage.getItem(k); }
   return "EAX1:"+btoa(unescape(encodeURIComponent(JSON.stringify(o)))); }
 /* 両方の端末の記録を足し合わせる：オブジェクトは中身ごと合体、数は大きいほう、配列は重複なしで合体 */
@@ -1112,7 +1230,8 @@ function xferImport(code){
 
 function toast(m){ const t=document.createElement("div"); t.className="toast"; t.textContent=m; document.body.appendChild(t); setTimeout(()=>t.remove(),1800); }
 
-syncHub();
+{ const t=todayStr(); S.opened=S.opened||[]; if(!S.opened.includes(t)){ S.opened.push(t); save(); } }
+syncHub(); wsave();
 document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ syncHub(); if(tab==="hub") hubScreen(); else if(tab==="home") home(); } });
 setTab("home");
 </script>
