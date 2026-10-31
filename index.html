@@ -468,7 +468,7 @@ nav button.on{color:var(--lime);text-shadow:0 0 10px rgba(212,255,58,.6)}
 <nav aria-label="メニュー"><div class="in">
   <button data-tab="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>ホーム</button>
   <button data-tab="learn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 6c-2-1.5-5-2-8-1.5V19c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V4.5C17 4 14 4.5 12 6zM12 6v14.5"/></svg>学習</button>
-  <button data-tab="quiz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>クイズ</button>
+  <button data-tab="quiz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>クイズ/遊ぶ</button>
   <button data-tab="road"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 20c0-6 12-6 12-12M6 20h.01M18 8V4"/><circle cx="18" cy="4" r="1.5"/></svg>ロードマップ</button>
   <button data-tab="hub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="3.5"/><circle cx="17" cy="7" r="3.5"/><circle cx="7" cy="17" r="3.5"/><circle cx="17" cy="17" r="3.5"/></svg>アプリ</button>
 </div></nav>
@@ -694,7 +694,7 @@ function wsave(){ W.bal=walletBalance(); W.updated=Date.now(); try{ localStorage
 const EARN_RULES=[
   ["アカデミーを開く","1"],["アカデミーで1話読む","3（2話目から +2、1日 +6まで）"],
   ["修行巻物を解く","3 ＋10問ごとに +1（+3まで）"],["小児科専門医","3"],["お笑い会話","2"],
-  ["PRIME 筋トレ","ミニ 2／ふつう 4／がっつり 6"],["PRIME 体重・3行日記","各 1"],["ミニ置き場","1"],["バイト（1回）",String(SHIFT_COIN)]
+  ["PRIME 筋トレ","ミニ 2／ふつう 4／がっつり 6"],["PRIME 体重・3行日記","各 1"],["ミニ置き場","1"],["ミニゲーム","クリア 2（1日3回まで）"],["バイト（1回）",String(SHIFT_COIN)]
 ];
 function earnByDay(){
   const m={}; const add=(d,src,c)=>{ d=normDay(d); if(!d||!(c>0)) return; (m[d]=m[d]||{})[src]=((m[d]||{})[src]||0)+c; };
@@ -711,6 +711,7 @@ function earnByDay(){
   for(const k in (pr.w||{})) if(pr.w[k]) add(k,"PRIME",1);
   for(const k in (pr.good||{})) if(Array.isArray(pr.good[k])&&pr.good[k].some(x=>x)) add(k,"PRIME",1);
   const mi=readLS("mini.log")||{}; for(const k in mi) if(mi[k]&&mi[k].length) add(k,"ミニ置き場",1);
+  const pg=readLS("pochiDojoLog2")||{}; for(const k in (pg.coinDays||{})) add(k,"ミニゲーム",2*Math.min(3,+pg.coinDays[k]||0));
   for(const k in W.shift) if(W.shift[k]) add(k,"バイト",SHIFT_COIN*(+W.shift[k]||1));
   return m;
 }
@@ -1053,18 +1054,35 @@ function terms(){
   document.getElementById("bkt").onclick=()=>setTab("learn");
 }
 
+/* クイズ／ミニゲーム切り替え（ミニゲーム本体はミニ置き場の tools/ポチ道場.html） */
+const GAME_URL="/Index/tools/"+encodeURIComponent("ポチ道場")+".html";
+let quizMode="quiz";
+function quizSwitch(){ return `<div class="tchips" role="tablist"><button class="tchip ${quizMode==="quiz"?"on":""}" data-qm="quiz">クイズ</button><button class="tchip ${quizMode==="game"?"on":""}" data-qm="game">ミニゲーム</button></div>`; }
+function bindQuizSwitch(){ app.querySelectorAll("[data-qm]").forEach(b=>b.onclick=()=>{ quizMode=b.dataset.qm; quiz(); }); }
+function gameScreen(){
+  const g=readLS("pochiDojoLog2")||{}, t=dkey(new Date());
+  const left=g.date===t? Math.max(0,3-(g.plays||0)) : 3;
+  const used=(g.days||[]).length;
+  app.innerHTML = `<section class="screen"><div><div class="eyebrow">MINI GAME</div><h1 class="title">ミニゲーム</h1></div>${quizSwitch()}
+    <div class="tile"><p style="margin:0 0 10px">5〜20秒で終わる日替わりゲーム。クリアで <b>2コイン</b>（1日3回まで）。今週使う日が増えるほど難しくなります。</p>
+      <div style="display:flex;gap:16px;margin-bottom:12px;font-size:13px;color:var(--muted)"><span>今日の残り <b style="color:var(--fg)">${left}/3</b></span><span>今週使った日 <b style="color:var(--fg)">${used}日</b></span></div>
+      <a class="cta" href="${GAME_URL}" style="display:inline-block;text-decoration:none">ミニゲームを始める</a></div></section>`;
+  bindQuizSwitch();
+}
 function quiz(){
+  if(quizMode==="game") return gameScreen();
   const pool = allLessons().filter(l=>S.done[l.id] && l.quiz).flatMap(l=>l.quiz.map(q=>({...q, from:l.t})));
   if(!pool.length){
-    app.innerHTML = `<section class="screen"><div><div class="eyebrow">QUIZ</div><h1 class="title">復習クイズ</h1></div>
+    app.innerHTML = `<section class="screen"><div><div class="eyebrow">QUIZ</div><h1 class="title">復習クイズ</h1></div>${quizSwitch()}
       <div class="tile"><p style="margin:0">読み終えたレッスンの問題がここに集まります。まずは今日のレッスンを1つ読んでみましょう。</p></div>
       <button class="cta" id="gl" style="align-self:flex-start">学習へ →</button></section>`;
-    document.getElementById("gl").onclick=()=>setTab("learn"); return;
+    document.getElementById("gl").onclick=()=>setTab("learn"); bindQuizSwitch(); return;
   }
   const set = pool.sort(()=>Math.random()-.5).slice(0,5);
   app.innerHTML = `<section class="screen"><div><div class="eyebrow">QUIZ</div><h1 class="title">復習クイズ</h1></div>
+    ${quizSwitch()}
     <p style="margin:0;color:var(--muted);font-size:13px">読んだレッスンからランダムに${set.length}問</p><div id="qz"></div></section>`;
-  const box=document.getElementById("qz"); let i=0, correct=0;
+  bindQuizSwitch(); const box=document.getElementById("qz"); let i=0, correct=0;
   function show(){
     if(i>=set.length){
       const t=todayStr(); if(!S.days.includes(t)) S.days.push(t); S.xp+=correct*10; addMinutes(2); save(); hdr();
