@@ -469,6 +469,7 @@ body.k5-lock{overflow:hidden}
 .k5-exp{margin:0;font-size:14px;line-height:1.7}
 .k5-ref{margin:0;font-size:12px;color:var(--muted)}
 .k5-next{align-self:flex-end;padding:12px 26px;font-size:15px}
+.k5-luck{align-self:stretch;min-height:44px;font-size:13px;color:var(--fg)}.k5-luck[disabled]{opacity:.6;color:var(--muted)}
 
 </style>
 
@@ -917,6 +918,15 @@ function k5Record(id, pick){
   try{ localStorage.setItem(SH_KEY, JSON.stringify(sh)); localStorage.setItem(SH_HKEY, JSON.stringify(h)); }catch(e){}
   return {right, box:c.box};
 }
+/* まぐれ当たりの自己申告（修行巻物の markLuck と同じ）。得点は減らさず、成績と復習間隔だけ実態に合わせる */
+function k5Luck(id){
+  const sh=readLS(SH_KEY); if(!sh||!sh.cards||!sh.cards[id]) return;
+  const c=sh.cards[id];
+  c.box=0; c.p4=0; c.ret=0; c.ef=Math.max(0.5,(c.ef||1)*0.85); c.due=Date.now()+SH_DAY; c.luck=(c.luck||0)+1;
+  if(sh.ok>0) sh.ok--;
+  const lg=(sh.log||{})[k5Iso()]; if(lg){ if(lg.o>0) lg.o--; let m=0; for(const k in sh.cards) m+=sh.cards[k].box; lg.m=m; }
+  try{ localStorage.setItem(SH_KEY, JSON.stringify(sh)); }catch(e){}
+}
 function k5Tiles(){
   const today=dkey(new Date()), lit=unionDays().has(today)||!!W.freeze[today];
   const n=k5Count(), done=n>=K5_N, col=K5_COL[new Date().getDay()];
@@ -969,8 +979,12 @@ function k5Pickd(o){
   const last=k5Count()>=K5_N;
   const fb=document.getElementById("k5fb"); fb.hidden=false;
   fb.innerHTML=`<div class="k5-vd ${r.right?"ok":"ng"}">${r.right?"正解":"不正解"}<span>${r.right?"次は"+["明日","明日","3日後","7日後","3週間後"][r.box]:"明日また出ます"}</span></div>
+    ${r.right?`<button class="back k5-luck" id="k5l">まぐれ当たり ― 明日また出す</button>`:""}
     <p class="k5-exp">${esc5(q.e||"")}</p>${q.r?`<p class="k5-ref">出典　${esc5(q.r)}</p>`:""}
     <button class="cta k5-next" id="k5n">${last?"完了 ✓":"次へ →"}</button>`;
+  const lb=document.getElementById("k5l");
+  if(lb) lb.onclick=()=>{ k5Luck(k5Cur.id); lb.disabled=true; lb.textContent="申告しました ― 明日また出します";
+    const s=document.querySelector("#k5ov .k5-vd span"); if(s) s.textContent="まぐれ申告のため明日また出ます"; };
   document.getElementById("k5n").onclick=()=>{ if(last){ k5Close(); toast("今日の巻物クリア！"); return; } const k=k5Today(); const nx=k.ids[k.n]; if(nx) k5Show(nx); else k5Open(); };
   requestAnimationFrame(()=>{ const nb=document.getElementById("k5n"); if(nb) nb.scrollIntoView({block:"nearest",behavior:"smooth"}); });
 }
