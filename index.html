@@ -473,6 +473,38 @@ body.k5-lock{overflow:hidden}
 .sm-lt{font-family:var(--f-num);color:var(--muted);margin-right:8px}.sm-multi{display:block;margin-top:6px;font-size:12px;color:var(--lime)}
 .sm-luck{margin-top:10px;font-size:12px;color:var(--fg)}.sm-luck[disabled]{color:var(--muted);opacity:.7}
 .hstat .tile{padding:10px 14px}.hstat .tile .v{font-size:20px;line-height:1.25}.hstat .bar{margin-top:4px}.sr-k{display:flex;justify-content:space-between;gap:6px}.sr-k span{font-size:11px;white-space:nowrap}
+.pr{background:var(--panel);border:1px solid var(--line);clip-path:var(--cut);padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.pr-h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.pr-logo{width:24px;height:24px;display:grid;place-items:center;background:#e8322e;color:#140a0a;font-family:var(--f-num);font-size:14px;clip-path:var(--cut-s)}
+.pr-h em{font-style:normal;font-weight:500;font-size:11px;color:var(--muted)}
+.pr-more{margin-left:auto;font-size:12px;font-weight:500;color:var(--cyan);text-decoration:none;padding:8px 0}
+.pr-w{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.pr-w input{flex:1;min-width:0;height:40px;box-sizing:border-box;padding:0 10px;font:600 17px var(--f-num);color:var(--fg);background:var(--panel-2,#221a33);border:1px solid var(--line);border-radius:0}
+.pr-u{color:var(--muted)}
+.pr-ws{padding:9px 16px;font-size:13px}
+.pr-w.done b{font-family:var(--f-num);font-size:20px;color:var(--fg)}.pr-w.done b small{font-size:12px;color:var(--muted)}
+.pr-w.done em{font-style:normal;font-family:var(--f-num);font-size:12px;color:var(--cyan)}
+.pr-fix{margin-left:auto;padding:6px 12px;font-size:12px;align-self:center}
+.pr-lv{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.pr-lb{min-height:52px;padding:6px 4px;border:1px solid var(--line);background:var(--panel-2,#221a33);color:var(--fg);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;clip-path:var(--cut-s);font:inherit}
+.pr-lb b{font-size:14px}.pr-lb span{font-size:10px;color:var(--muted)}
+.pr-lb:first-child{border-color:#e8322e}
+.pr-done{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#ff8a80}
+.pr-sh .k5-hd em{font-style:normal;font-size:12px;color:var(--muted);font-weight:500;margin-left:8px}
+.pr-list{margin-top:8px}
+.pr-ex{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.pr-chk{width:44px;height:44px;border:1.5px solid var(--line);background:var(--panel-2,#221a33);color:transparent;font-size:18px;cursor:pointer}
+.pr-chk.on{background:#e8322e;border-color:#e8322e;color:#140a0a}
+.pr-nm{font-size:14px;line-height:1.35}.pr-nm small{display:block;font-size:11px;color:var(--muted)}
+.pr-q{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--muted)}
+.pr-q input{width:46px;height:36px;box-sizing:border-box;text-align:center;font:600 14px var(--f-num);color:var(--fg);background:var(--panel-2,#221a33);border:1px solid var(--line)}
+.pr-acts{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.pr-acts .cta{padding:11px 26px}
+.pr-ax{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}
+.pr-ax b{font-size:14px;margin-right:6px}.pr-ax span{font-size:11px;color:var(--muted)}
+.pr-sc{display:flex;gap:4px}
+.pr-sc button{width:40px;height:40px;border:1px solid var(--line);background:var(--panel-2,#221a33);color:var(--fg);font-family:var(--f-num);cursor:pointer}
+.pr-sc button.on{background:var(--c);color:#140a0a;border-color:var(--c);font-weight:700}
 .k5-luck{align-self:stretch;min-height:44px;font-size:13px;color:var(--fg)}.k5-luck[disabled]{opacity:.6;color:var(--muted)}
 
 </style>
@@ -698,7 +730,10 @@ function appStreak(a){
   while(set.has(dkey(d))){ n++; d.setDate(d.getDate()-1); }
   return n;
 }
-function unionDays(){ const s=new Set(S.days); S.hub.forEach(a=>{ if(!a.self) appDays(a).forEach(d=>s.add(d)); }); return s; }
+/* ミニ置き場は「開いただけ」なので、2026-11-05 からは継続日数に数えない（それより前の日は途切れないよう従来どおり） */
+const MINI_CUT=new Date(2026,10,5);
+function unionDays(){ const s=new Set(S.days); S.hub.forEach(a=>{ if(a.self) return;
+  appDays(a).forEach(d=>{ if(a.id==="mini"){ const p=String(d).split("-").map(Number); if(new Date(p[0],p[1]-1,p[2])>=MINI_CUT) return; } s.add(d); }); }); return s; }
 function unionStreak(){ const set=unionDays(); try{ for(const k in W.freeze) set.add(k); }catch(e){} let n=0; const d=new Date(); if(!set.has(dkey(d))) d.setDate(d.getDate()-1); while(set.has(dkey(d))){ n++; d.setDate(d.getDate()-1);} return n; }
 function monthDays(y,m){ return [...unionDays()].filter(s=>s.startsWith(y+"-"+(m+1)+"-")).length; }
 const STAR_DAYS=[3,7,12,18,25];
@@ -997,6 +1032,79 @@ function k5Close(){
   if(tab==="home"){ const y=window.scrollY; home(); hdr(); window.scrollTo(0,y); }
 }
 
+/* ---------- PRIME：体重とメニューをアカデミーだけで記録（PRIMEの記録 prime_30s_v1 にそのまま書く） ---------- */
+const PR_KEY="prime_30s_v1";
+const PR_EX=[
+  {id:"sq",n:"スクワット",u:"回",lv:[1,2,3],d:[10,15,20],s:[1,3,4]},{id:"pu",n:"腕立て（膝つきOK）",u:"回",lv:[1,2,3],d:[5,10,15],s:[1,3,4]},
+  {id:"pl",n:"プランク",u:"秒",lv:[1,2,3],d:[20,30,45],s:[1,3,3]},{id:"hr",n:"ヒップリフト",u:"回",lv:[2,3],d:[10,15,20],s:[1,2,3]},
+  {id:"lu",n:"ランジ（左右それぞれ）",u:"回",lv:[2,3],d:[8,10,12],s:[1,2,3]},{id:"bs",n:"ブルガリアンスクワット",u:"回",lv:[3],d:[8,8,10],s:[1,1,3]},
+  {id:"pk",n:"パイク腕立て",u:"回",lv:[3],d:[5,6,8],s:[1,1,3]},{id:"cr",n:"クランチ",u:"回",lv:[3],d:[10,15,20],s:[1,2,3]}];
+const PR_LV={1:{n:"ミニ",s:"1分・どれか1つでOK"},2:{n:"ふつう",s:"10分くらい"},3:{n:"がっつり",s:"20分くらい"}};
+const PR_AX=[{id:"body",n:"体",s:"からだの軽さ",c:"#5ee6c8"},{id:"focus",n:"頭",s:"集中・学び",c:"#3ee8ff"},{id:"mood",n:"心",s:"気分の安定",c:"#ffb547"},{id:"self",n:"自分",s:"自分を信じられる度",c:"#e8322e"}];
+function prUrl(){ const a=(S.hub||[]).find(x=>x.id==="dojo"); return (a&&a.url)||"https://20qolufiofleity14-lab.github.io/PRIME/"; }
+function prLoad(){ const d=readLS(PR_KEY)||{}; d.log=d.log||{}; d.w=d.w||{}; if(!Array.isArray(d.ex)) d.ex=JSON.parse(JSON.stringify(PR_EX)); if(!d.target) d.target=3; return d; }
+function prSave(d){ try{ localStorage.setItem(PR_KEY, JSON.stringify(d)); }catch(e){} }
+function prPk(k){ const a=String(k).split("-").map(Number); return new Date(a[0],a[1]-1,a[2]); }
+function prLastW(d,k){ const ks=Object.keys(d.w).filter(x=>x!==k).sort((a,b)=>prPk(b)-prPk(a)); return ks.length? d.w[ks[0]] : null; }
+function prLastVal(d,id){ const ks=Object.keys(d.log).filter(k=>d.log[k]&&d.log[k].lv>0).sort((a,b)=>prPk(b)-prPk(a));
+  for(const k of ks){ const it=(d.log[k].items||[]).find(x=>x.id===id); if(it) return it; } return null; }
+function prWeek(d){ const t=new Date(), x=new Date(t.getFullYear(),t.getMonth(),t.getDate()); x.setDate(x.getDate()-((x.getDay()+6)%7)); let n=0;
+  for(let i=0;i<7;i++){ const k=dkey(x); if(d.log[k]&&d.log[k].lv>0) n++; x.setDate(x.getDate()+1); } return n; }
+let prEdit=false;
+function primeCard(){
+  const d=prLoad(), k=dkey(new Date()), w=d.w[k], last=prLastW(d,k), lg=d.log[k], done=!!(lg&&lg.lv>0), wk=prWeek(d);
+  const diff=(w!=null&&last!=null)? Math.round((w-last)*10)/10 : null;
+  return `<div class="pr">
+    <div class="pr-h"><b class="pr-logo">P</b><span>PRIME</span><em>今週 ${wk}/${d.target}回</em><a class="pr-more" href="${prUrl()}">PRIMEで深める →</a></div>
+    ${(w!=null&&!prEdit)? `<div class="pr-w done"><span>体重</span><b>${w.toFixed(1)}<small> kg</small></b>${diff!=null?`<em>${diff>0?"+":""}${diff.toFixed(1)}</em>`:""}<button class="back pr-fix" id="prFix">直す</button></div>`
+      : `<div class="pr-w"><label for="prW">体重</label><input id="prW" type="number" inputmode="decimal" step="0.1" placeholder="${last!=null?last.toFixed(1):"例 65.0"}" value="${w!=null?w:""}"><span class="pr-u">kg</span><button class="cta pr-ws" id="prWs">記録</button></div>`}
+    ${done? `<div class="pr-done">✓ 今日の一票（${PR_LV[lg.lv].n}・${(lg.items||[]).length}種目）<button class="back pr-fix" id="prAgain">記録しなおす</button></div>`
+      : `<div class="pr-lv">${[1,2,3].map(l=>`<button class="pr-lb" data-prl="${l}"><b>${PR_LV[l].n}</b><span>${PR_LV[l].s}</span></button>`).join("")}</div>`}
+  </div>`;
+}
+function bindPrime(){
+  const rr=()=>{ const y=window.scrollY; home(); window.scrollTo(0,y); };
+  const ws=document.getElementById("prWs"); if(ws) ws.onclick=()=>{ const v=parseFloat(document.getElementById("prW").value);
+    if(!(v>20&&v<300)){ toast("体重を入れてください"); return; } const d=prLoad(); d.w[dkey(new Date())]=Math.round(v*10)/10; prSave(d); prEdit=false; syncHub(); wsave(); toast("体重を記録しました"); rr(); };
+  const fx=document.getElementById("prFix"); if(fx) fx.onclick=()=>{ prEdit=true; rr(); };
+  const ag=document.getElementById("prAgain"); if(ag) ag.onclick=()=>{ const d=prLoad(); prSession(d.log[dkey(new Date())].lv); };
+  app.querySelectorAll("[data-prl]").forEach(b=>b.onclick=()=>prSession(+b.dataset.prl));
+}
+function prSheet(html){ prClose(); const ov=document.createElement("div"); ov.id="prov"; ov.className="k5-ov";
+  ov.innerHTML=`<div class="k5-sh pr-sh" role="dialog" aria-modal="true">${html}</div>`; ov.addEventListener("click",e=>{ if(e.target===ov) prClose(); });
+  document.body.appendChild(ov); document.body.classList.add("k5-lock"); return ov.querySelector(".k5-sh"); }
+function prClose(re){ const ov=document.getElementById("prov"); if(ov) ov.remove(); document.body.classList.remove("k5-lock");
+  if(re&&tab==="home"){ const y=window.scrollY; home(); hdr(); window.scrollTo(0,y); } }
+function prSession(lv){
+  const d=prLoad(), list=d.ex.filter(e=>e.lv.includes(lv)), sel={};
+  const sh=prSheet(`<div class="k5-hd"><b>${PR_LV[lv].n}<em>${PR_LV[lv].s}</em></b><button class="k5-x" id="prX" aria-label="閉じる">✕</button></div>
+    <p class="k5-note">${lv===1?"どれか1つ、やったらチェック。気分が乗ったら足してOK。":"やった種目にチェック。全部できなくても、やった分だけ記録します。"}</p>
+    <div class="pr-list">${list.map(e=>{ const last=prLastVal(d,e.id), v=last&&lv>1? last.v : e.d[lv-1], st=e.s[lv-1];
+      return `<div class="pr-ex"><button class="pr-chk" data-id="${e.id}" aria-label="${esc5(e.n)}をやった">✓</button>
+        <div class="pr-nm">${esc5(e.n)}${last?`<small>前回 ${last.v}${esc5(e.u)}×${last.s}</small>`:""}</div>
+        <div class="pr-q"><input type="number" inputmode="numeric" data-v="${e.id}" value="${v}" aria-label="${esc5(e.n)}の${esc5(e.u)}">${esc5(e.u)}×<input type="number" inputmode="numeric" data-s="${e.id}" value="${st}" aria-label="セット数">set</div></div>`; }).join("")}</div>
+    <div class="pr-acts"><button class="back" id="prCancel">やめる</button><button class="cta" id="prFin" disabled>やった！</button></div>`);
+  sh.querySelector("#prX").onclick=()=>prClose(); sh.querySelector("#prCancel").onclick=()=>prClose();
+  sh.querySelectorAll(".pr-chk").forEach(b=>b.onclick=()=>{ sel[b.dataset.id]=!sel[b.dataset.id]; b.classList.toggle("on",sel[b.dataset.id]); sh.querySelector("#prFin").disabled=!Object.values(sel).some(Boolean); });
+  sh.querySelector("#prFin").onclick=()=>{
+    const items=list.filter(e=>sel[e.id]).map(e=>({id:e.id,n:e.n,u:e.u,v:+sh.querySelector(`[data-v="${e.id}"]`).value||0,s:+sh.querySelector(`[data-s="${e.id}"]`).value||1}));
+    const d2=prLoad(), k=dkey(new Date()), prev=d2.log[k]||{};
+    d2.log[k]=Object.assign({},prev,{lv,items,at:Date.now(),rest:false}); prSave(d2); syncHub(); wsave();
+    prCheckin(lv);
+  };
+}
+/* やった後の体調（任意）。PRIMEで「やった日とやらない日」を比べるのに使われる */
+function prCheckin(lv){
+  const d=prLoad(), k=dkey(new Date()), cond=Object.assign({},(d.log[k]&&d.log[k].cond)||{});
+  const sh=prSheet(`<div class="k5-hd"><b>今日の一票、入りました</b><button class="k5-x" id="prX" aria-label="閉じる">✕</button></div>
+    <p class="k5-note">いまの状態に近いものを選ぶ（任意）。PRIMEで「やった日」と「やらない日」を比べるのに使います。</p>
+    ${PR_AX.map(a=>`<div class="pr-ax"><div><b>${a.n}</b><span>${a.s}</span></div><div class="pr-sc" data-ax="${a.id}" style="--c:${a.c}">${[1,2,3,4,5].map(n=>`<button data-n="${n}" class="${cond[a.id]===n?"on":""}" aria-label="${a.n} ${n}">${n}</button>`).join("")}</div></div>`).join("")}
+    <div class="pr-acts"><button class="back" id="prSkip">スキップ</button><button class="cta" id="prOk">記録する</button></div>`);
+  sh.querySelectorAll(".pr-sc").forEach(sc=>sc.querySelectorAll("button").forEach(b=>b.onclick=()=>{ cond[sc.dataset.ax]=+b.dataset.n; sc.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b)); }));
+  const fin=save=>{ if(save){ const d2=prLoad(); if(d2.log[k]){ d2.log[k].cond=cond; prSave(d2); } } prClose(true); toast("一票、入りました"); };
+  sh.querySelector("#prX").onclick=()=>fin(false); sh.querySelector("#prSkip").onclick=()=>fin(false); sh.querySelector("#prOk").onclick=()=>fin(true);
+}
+
 /* ---------- render ---------- */
 const app = document.getElementById("app");
 let tab="home";
@@ -1076,6 +1184,7 @@ function home(){
       <div class="tile"><div class="k">学習完了</div><div class="v">${done}<small>/${tp}</small></div><div class="bar"><i style="width:${done/tp*100}%"></i></div></div>
       <div class="tile"><div class="k sr-k">${r.name}<span>${nr? "次まで "+(nr.xp-S.xp)+" XP":"最高ランク"}</span></div><div class="v">Lv.${r.lv}</div><div class="bar"><i style="width:${prog}%"></i></div></div>
     </div>
+    ${primeCard()}
     <div class="home-cal">
       <div class="hub-h"><div class="eyebrow">CALENDAR · ${hcM().getMonth()+1}月</div>${restMode? `<div class="rest-nav"><button class="back" id="hmP" ${hcOff<=0?"disabled":""}>‹</button><button class="back" id="hmN" ${hcOff>=1?"disabled":""}>›</button></div>`:""}<button class="back" id="hcal">くわしく ›</button></div>
       ${calGrid(hcM().getFullYear(),hcM().getMonth(),hcOff===0)}
@@ -1088,6 +1197,7 @@ function home(){
   const hc=document.getElementById("hcal"); if(hc) hc.onclick=()=>{ calOff=0; calendar(); window.scrollTo(0,0); };
   bindWallet(home);
   const k5b=document.getElementById("k5go"); if(k5b) k5b.onclick=k5Open;
+  bindPrime();
   const rb=document.getElementById("restBtn"); if(rb) rb.onclick=()=>{ restMode=!restMode; hcOff=0; const y=window.scrollY; home(); window.scrollTo(0,y); };
   const hp=document.getElementById("hmP"), hn=document.getElementById("hmN"); const rr=()=>{ const y=window.scrollY; home(); window.scrollTo(0,y); };
   if(hp) hp.onclick=()=>{ if(hcOff>0){ hcOff--; rr(); } }; if(hn) hn.onclick=()=>{ if(hcOff<1){ hcOff++; rr(); } };
