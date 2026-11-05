@@ -472,6 +472,7 @@ body.k5-lock{overflow:hidden}
 .opt.sel{border-color:var(--lime);background:rgba(212,255,58,.1)}.opt.miss{border-color:var(--cyan);border-style:dashed}
 .sm-lt{font-family:var(--f-num);color:var(--muted);margin-right:8px}.sm-multi{display:block;margin-top:6px;font-size:12px;color:var(--lime)}
 .sm-luck{margin-top:10px;font-size:12px;color:var(--fg)}.sm-luck[disabled]{color:var(--muted);opacity:.7}
+.hstat .tile{padding:10px 14px}.hstat .tile .v{font-size:20px;line-height:1.25}.hstat .bar{margin-top:4px}.sr-k{display:flex;justify-content:space-between;gap:6px}.sr-k span{font-size:11px;white-space:nowrap}
 .k5-luck{align-self:stretch;min-height:44px;font-size:13px;color:var(--fg)}.k5-luck[disabled]{opacity:.6;color:var(--muted)}
 
 </style>
@@ -1071,9 +1072,9 @@ function home(){
       return others.length? `<div class="alt"><div class="eyebrow">気分を変えて、別の章から</div><div class="alt-row">${others.map(o=>`<button class="alt-c" data-l="${o.l.id}"><span>${COURSES.find(x=>x.chapters.includes(o.c)).id!==S.course? COURSES.find(x=>x.chapters.includes(o.c)).short+" · ":""}${o.c.n} ${o.c.t}</span><b>${o.l.t}</b></button>`).join("")}</div></div>`:""; })()}
     ${walletCard()}
     ${k5Tiles()}
-    <div class="grid2">
+    <div class="grid2 hstat">
       <div class="tile"><div class="k">学習完了</div><div class="v">${done}<small>/${tp}</small></div><div class="bar"><i style="width:${done/tp*100}%"></i></div></div>
-      <div class="tile"><div class="k">${r.name}</div><div class="v">Lv.${r.lv}</div><div class="bar"><i style="width:${prog}%"></i></div><div class="k" style="margin-top:6px">${nr? "次まで "+(nr.xp-S.xp)+" XP":"最高ランク"}</div></div>
+      <div class="tile"><div class="k sr-k">${r.name}<span>${nr? "次まで "+(nr.xp-S.xp)+" XP":"最高ランク"}</span></div><div class="v">Lv.${r.lv}</div><div class="bar"><i style="width:${prog}%"></i></div></div>
     </div>
     <div class="home-cal">
       <div class="hub-h"><div class="eyebrow">CALENDAR · ${hcM().getMonth()+1}月</div>${restMode? `<div class="rest-nav"><button class="back" id="hmP" ${hcOff<=0?"disabled":""}>‹</button><button class="back" id="hmN" ${hcOff>=1?"disabled":""}>›</button></div>`:""}<button class="back" id="hcal">くわしく ›</button></div>
