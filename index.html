@@ -425,6 +425,51 @@ nav button.on{color:var(--lime);text-shadow:0 0 10px rgba(212,255,58,.6)}
 .ctab.on{background:var(--cyan);color:#0f0b1a;border-color:var(--cyan)}
 .ctab.on small{opacity:.8}
 .scene-tag{}
+/* ---- ホーム下半分：コイン1行・継続日数＋今日の巻物 ---- */
+.wal-c{padding:8px 8px 8px 14px;gap:8px}
+.wal-line{display:flex;align-items:center;gap:8px}
+.wal-line .wal-bal{flex:1;min-width:0;flex-wrap:nowrap}
+.wal-line .wal-bal b{font-size:26px}
+.wal-line .wal-tk b{font-size:17px}
+.wal-line .wal-shift{padding:0 12px;height:40px;white-space:nowrap;font-size:12px}
+.wal-more{align-self:center;width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+.k5-row .tile{min-height:132px;display:flex;flex-direction:column}
+.k5-sn{margin-top:auto;font-size:11px;font-weight:700;color:#3a0f22}
+.tile.streak.lit{box-shadow:inset 0 0 0 2px rgba(255,255,255,.55)}
+.tile.k5{border:1px solid var(--lime)}
+.k5-dots{display:flex;gap:4px;margin:6px 0 10px}
+.k5-dots i{flex:1;height:7px;background:#3a3157;transform:skewX(-14deg)}
+.k5-dots i.on{background:var(--lime)}
+.k5-go{margin-top:auto;justify-content:center;padding:10px 8px;font-size:14px;width:100%}
+.tile.k5.done{border-color:var(--k5c);background:color-mix(in srgb,var(--k5c) 14%,#0f0b1a);box-shadow:inset 0 0 24px rgba(var(--k5r),.5)}
+.tile.k5.done .v{color:var(--k5c);text-shadow:0 0 10px rgba(var(--k5r),.9)}
+.tile.k5.done .k5-dots i.on{background:var(--k5c);box-shadow:0 0 6px var(--k5c)}
+.k5-ok{margin-top:auto;height:34px;display:flex;align-items:center;justify-content:center;background:var(--k5c);color:#12102a;font-weight:700;font-size:13px;box-shadow:0 0 12px rgba(var(--k5r),.8)}
+body.k5-lock{overflow:hidden}
+.k5-ov{position:fixed;inset:0;z-index:80;background:rgba(6,4,14,.62);display:flex;align-items:flex-end;justify-content:center}
+.k5-sh{width:min(560px,100%);max-height:88vh;overflow-y:auto;box-sizing:border-box;background:var(--panel);border-top:2px solid var(--lime);border-radius:18px 18px 0 0;padding:12px 16px calc(20px + env(safe-area-inset-bottom,0px));animation:k5up .22s ease-out}
+@keyframes k5up{from{transform:translateY(40px);opacity:0}}
+.k5-hd{display:flex;justify-content:space-between;align-items:center}
+.k5-hd b{font-size:15px}.k5-hd em{font-style:normal;color:var(--lime);font-family:var(--f-num);margin-left:4px}
+.k5-x{width:44px;height:44px;background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer}
+.k5-bars{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.k5-bars i{height:5px;background:var(--line)}.k5-bars i.on{background:var(--lime)}.k5-bars i.cur{background:#7f7aa8}
+.k5-note{margin:8px 0 0;font-size:11px;color:var(--muted)}
+.k5-tag{margin-top:12px;font-size:11px;color:var(--cyan);letter-spacing:.08em;min-height:1em}
+.k5-vig{margin-top:6px;font-size:13px;color:var(--muted);line-height:1.6;border-left:3px solid var(--line);padding-left:10px}
+.k5-q{margin-top:6px;font-size:17px;font-weight:700;line-height:1.55}
+.k5-ch{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.k5-c{min-height:48px;padding:10px 14px;text-align:left;font:inherit;font-size:15px;font-weight:500;color:var(--fg);background:#241c36;border:1.5px solid #3f3560;cursor:pointer;line-height:1.5}
+.k5-c.ok{border-color:#5fdc8c;background:#1f3b2a;color:#c9fbd8}
+.k5-c.ng{border-color:var(--hot);background:#3a1a33}
+.k5-c.dim{opacity:.45}
+.k5-fb{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.k5-vd{font-weight:700;font-size:16px}.k5-vd.ok{color:#9df5b8}.k5-vd.ng{color:#ff9cc6}
+.k5-vd span{font-size:12px;font-weight:500;color:var(--muted);margin-left:10px}
+.k5-exp{margin:0;font-size:14px;line-height:1.7}
+.k5-ref{margin:0;font-size:12px;color:var(--muted)}
+.k5-next{align-self:flex-end;padding:12px 26px;font-size:15px}
+
 </style>
 
 <div class="wrap">
@@ -760,12 +805,15 @@ function shiftToggle(k){ if(W.shift[k]){ delete W.shift[k]; whist(fmtDay(k)+" �
 function walletCard(){
   const bal=walletBalance(), te=todayEarn(), gaps=gapDays(), tk=dkey(new Date());
   const need=Math.max(0,gaps.length-W.tickets), canFix = gaps.length && need*TICKET_PRICE<=bal;
-  return `<div class="wal">
-    <div class="wal-top"><div><div class="eyebrow">COINS</div><div class="wal-bal"><b>${bal.toLocaleString()}</b><span>コイン</span>${te?`<em>今日 +${te}</em>`:""}</div></div>
-      <div class="wal-tk" aria-label="お休みチケット ${W.tickets}枚"><i class="${W.tickets?"on":""}"></i><b>${W.tickets}</b><span>枚</span></div></div>
+  return `<div class="wal wal-c">
+    <div class="wal-line">
+      <div class="wal-bal"><b>${bal.toLocaleString()}</b><span>コイン</span>${te?`<em>+${te}</em>`:""}</div>
+      <div class="wal-tk" aria-label="お休みチケット ${W.tickets}枚"><i class="${W.tickets?"on":""}"></i><b>${W.tickets}</b><span>枚</span></div>
+      <button class="wal-shift ${W.shift[tk]?"on":""}" id="wShift">${W.shift[tk]?"✓ バイト":"バイト ＋"+SHIFT_COIN}</button>
+      <button class="back wal-more" id="wMore" aria-label="コインのくわしく">›</button>
+    </div>
     ${gaps.length? `<div class="wal-gap"><p>${gaps.map(fmtDay).reverse().join("・")} がお休みで、連続が途切れそうです。</p>
       ${canFix? `<button class="cta" id="wFix">${need? "チケットを"+need+"枚買って守る（"+need*TICKET_PRICE+"コイン）" : "チケット"+gaps.length+"枚で守る"}</button>`:`<p class="wal-s">コインがたまれば、${BACK_DAYS}日以内ならあとからでも守れます</p>`}</div>`:""}
-    <div class="wal-row"><button class="wal-shift ${W.shift[tk]?"on":""}" id="wShift">${W.shift[tk]?"✓ 今日バイト行った":"今日バイト行った ＋"+SHIFT_COIN}</button><button class="back" id="wMore">くわしく ›</button></div>
   </div>`;
 }
 function bindWallet(after){
@@ -800,6 +848,135 @@ function walletScreen(){
   document.getElementById("wBuy").onclick=()=>{ if(buyTicket()) toast("チケットを1枚買いました"); walletScreen(); };
   const f2=document.getElementById("wFix2"); if(f2) f2.onclick=()=>{ if(fixGaps()) toast("連続日数を守りました"); walletScreen(); };
   app.querySelectorAll("[data-sh]").forEach(b=>b.onclick=()=>{ shiftToggle(b.dataset.sh); walletScreen(); });
+}
+
+/* ---------- 今日の巻物5問：ホームからその場で解く ----------
+   問題は修行巻物のページから読み込み、答えは修行巻物と同じ記録（shugyo_endo_v2 / shugyo_habit_v1）に書く。
+   だから巻物の復習間隔・正答率・連続日数にもそのまま反映される。途中で閉じても1問ずつ保存済み。 */
+const K5_N=5, SH_KEY="shugyo_endo_v2", SH_HKEY="shugyo_habit_v1", SH_DAY=864e5, SH_INT=[1,1,3,7,21];
+/* 5問クリアの色は曜日で変わる（日〜土） */
+const K5_COL=[["#ff4fd8","255,79,216"],["#45d9f0","69,217,240"],["#ff5470","255,84,112"],["#4f8bff","79,139,255"],["#2ef0a0","46,240,160"],["#ffc83d","255,200,61"],["#a98bff","169,139,255"]];
+let K5Q=null, K5BY={}, K5CATS={}, k5Loading=null, k5Cur=null;
+function k5Url(){ const a=(S.hub||[]).find(x=>x.id==="shugyo"); return (a&&a.url)||"https://20qolufiofleity14-lab.github.io/shugyo/"; }
+function k5Iso(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function k5Today(){ const t=dkey(new Date()); if(!S.k5||S.k5.d!==t) S.k5={d:t,ids:[],n:0}; return S.k5; }
+function k5Count(){ const sh=readLS(SH_KEY)||{}; const lg=(sh.log||{})[k5Iso()]; return Math.min(K5_N, Math.max(k5Today().n, (lg&&lg.a)||0)); }
+function k5Load(){
+  if(K5Q) return Promise.resolve(K5Q);
+  if(k5Loading) return k5Loading;
+  k5Loading=fetch(k5Url()).then(r=>{ if(!r.ok) throw new Error(r.status); return r.text(); }).then(txt=>{
+    const i=txt.indexOf("const Q=["), j=txt.indexOf("\n];",i);
+    if(i<0||j<0) throw new Error("no Q");
+    const arr=new Function("return "+txt.slice(i+8,j+2))();
+    try{ const a=txt.indexOf("const CATS={"), b=txt.indexOf("};",a); if(a>=0&&b>a) K5CATS=new Function("return "+txt.slice(a+11,b+1))(); }catch(e){}
+    /* 巻物と同じ規則で id を振る（巻ごとの連番。明示 id があればそれ） */
+    const ctr={}; arr.forEach(q=>{ const bk=q.bk||"growth"; q.bk=bk; if(q.id) return; ctr[bk]=(ctr[bk]||0)+1; q.id=bk+"-"+String(ctr[bk]).padStart(3,"0"); });
+    K5Q=arr; K5BY={}; arr.forEach(q=>K5BY[q.id]=q); return arr;
+  }).catch(e=>{ k5Loading=null; throw e; });
+  return k5Loading;
+}
+function k5Shuf(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.random()*(i+1)|0; [a[i],a[j]]=[a[j],a[i]]; } return a; }
+/* 選び方：苦手（落とした・まぐれ）を2問まで → 復習日が来た問 → 残りはランダム */
+function k5Pick(n, ex){
+  const cards=(readLS(SH_KEY)||{}).cards||{}, now=Date.now(), skip=new Set(ex), out=[];
+  const add=q=>{ if(out.length<n && !skip.has(q.id) && !out.includes(q.id)) out.push(q.id); };
+  const weak=K5Q.filter(q=>{ const c=cards[q.id]; if(!c||c.ret) return false; let w=0; if(c.w) for(const k in c.w) w+=c.w[k]; return w>0||(c.luck||0)>0; });
+  const due=K5Q.filter(q=>{ const c=cards[q.id]; return c&&!c.ret&&c.due&&c.due<=now; });
+  k5Shuf(weak).slice(0,2).forEach(add); k5Shuf(due).forEach(add); k5Shuf(K5Q).forEach(add);
+  return out;
+}
+/* 修行巻物の answer()・dailyBonus() と同じ計算で記録する */
+function k5ShStreak(sh,h){
+  const set=new Set(), iso=k=>{ const m=String(k).match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); return m? m[1]+"-"+m[2].padStart(2,"0")+"-"+m[3].padStart(2,"0") : null; };
+  (sh.days||[]).forEach(d=>{ const k=iso(d); if(k) set.add(k); }); (h.days||[]).forEach(d=>{ const k=iso(d); if(k) set.add(k); });
+  for(const k in sh.log) if(sh.log[k].a>0) set.add(k);
+  const d=new Date(); let n=0; if(!set.has(k5Iso())) d.setDate(d.getDate()-1);
+  for(;;){ const k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); if(!set.has(k)) break; n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+function k5Record(id, pick){
+  const q=K5BY[id];
+  const sh=Object.assign({xp:0,rank:0,streak:0,best:0,ans:0,ok:0,days:[],cards:{},vol:"all",src:"all",mode:"all",mo:null,gm:{},log:{}}, readLS(SH_KEY)||{});
+  sh.cards=sh.cards||{}; sh.log=sh.log||{}; sh.days=sh.days||[];
+  const h=readLS(SH_HKEY)||{}; h.coin=h.coin||0; h.earned=h.earned||0; h.days=h.days||[];
+  const iso=k5Iso(), plain=todayStr(); let coin=0;
+  if(!h.days.includes(iso)){ h.days.push(iso); if(!sh.days.includes(plain)) sh.days.push(plain); sh.xp+=20;
+    sh.log[iso]=sh.log[iso]||{a:0,o:0,m:0}; const st=k5ShStreak(sh,h); let c=10; if(st>0&&st%7===0) c+=50; else c+=Math.min(20,st*2); coin+=c; }
+  const c=sh.cards[id]||(sh.cards[id]={box:0,due:0,seen:0,ok:0});
+  const right=pick===q.a, first=c.seen===0;
+  let xp=right?(first?12:7):3;
+  if(right){ sh.ok++; sh.streak++; if(sh.streak>sh.best) sh.best=sh.streak; if(sh.streak%5===0) xp+=15;
+    if(c.box===4) c.p4=(c.p4||0)+1; c.box=Math.min(4,c.box+1); c.ok++; c.ef=Math.min(2.0,(c.ef||1)*1.06); if((c.p4||0)>=2) c.ret=1; }
+  else { sh.streak=0; c.box=0; c.p4=0; c.ret=0; c.w=c.w||{}; c.w[pick]=(c.w[pick]||0)+1; c.ef=Math.max(0.5,(c.ef||1)*0.78); }
+  c.seen++; c.due=Date.now()+Math.max(1,Math.round(SH_INT[c.box]*(c.ef||1)))*SH_DAY;
+  sh.ans++; sh.xp+=xp;
+  const lg=sh.log[iso]||(sh.log[iso]={a:0,o:0,m:0}); lg.a++; if(right) lg.o++;
+  let m=0; for(const k in sh.cards) m+=sh.cards[k].box; lg.m=m;
+  coin+=right?(first?3:2):1; if(right&&sh.streak%5===0) coin+=5;
+  h.coin+=coin; h.earned+=coin;
+  try{ localStorage.setItem(SH_KEY, JSON.stringify(sh)); localStorage.setItem(SH_HKEY, JSON.stringify(h)); }catch(e){}
+  return {right, box:c.box};
+}
+function k5Tiles(){
+  const today=dkey(new Date()), lit=unionDays().has(today)||!!W.freeze[today];
+  const n=k5Count(), done=n>=K5_N, col=K5_COL[new Date().getDay()];
+  return `<div class="grid2 k5-row">
+    <div class="tile streak ${lit?"lit":""}"><div class="k">継続日数（全アプリ）</div><div class="v">${unionStreak()}<small style="color:#3a0f22"> 日</small></div><div class="k5-sn">${lit?"✓ 今日もつながった":"巻物を解けば今日もつながる"}</div></div>
+    <div class="tile k5 ${done?"done":""}" ${done?`style="--k5c:${col[0]};--k5r:${col[1]}"`:""}>
+      <div class="k">今日の巻物</div><div class="v">${n}<small>/${K5_N}</small></div>
+      <div class="k5-dots" aria-hidden="true">${Array.from({length:K5_N},(_,i)=>`<i class="${i<n?"on":""}"></i>`).join("")}</div>
+      ${done? `<div class="k5-ok">✓ 今日クリア</div>` : `<button class="cta k5-go" id="k5go">${n>0?"続きから ▶":"5問解く ▶"}</button>`}
+    </div>
+  </div>`;
+}
+function k5Open(){
+  const b=document.getElementById("k5go"); if(b){ b.disabled=true; b.textContent="読み込み中…"; }
+  k5Load().then(()=>{
+    const k=k5Today(), need=K5_N-k5Count();
+    if(need<=0){ home(); return; }
+    let rest=k.ids.slice(k.n).filter(id=>K5BY[id]);
+    if(rest.length<need){ const more=k5Pick(need-rest.length, k.ids); k.ids=k.ids.slice(0,k.n).concat(rest,more); rest=k.ids.slice(k.n); save(); }
+    k5Show(rest[0]);
+  }).catch(()=>{ toast("巻物の問題を読み込めませんでした。電波のある所でもう一度"); home(); });
+}
+function k5Show(id){
+  const q=K5BY[id]; if(!q){ k5Close(); return; }
+  const n=k5Count(), order=k5Shuf(q.o.map((_,i)=>i));
+  k5Cur={id, order, answered:false};
+  let ov=document.getElementById("k5ov");
+  if(!ov){ ov=document.createElement("div"); ov.id="k5ov"; ov.className="k5-ov"; document.body.appendChild(ov);
+    ov.addEventListener("click",e=>{ if(e.target===ov) k5Close(); }); document.body.classList.add("k5-lock"); }
+  ov.innerHTML=`<div class="k5-sh" role="dialog" aria-modal="true" aria-label="今日の巻物">
+    <div class="k5-hd"><b>今日の巻物 <em>${n+1}/${K5_N}</em></b><button class="k5-x" id="k5x" aria-label="閉じる">✕</button></div>
+    <div class="k5-bars">${Array.from({length:K5_N},(_,i)=>`<i class="${i<n?"on":i===n?"cur":""}"></i>`).join("")}</div>
+    <p class="k5-note">途中で閉じてもOK。解いた分は保存されて、次は続きから。</p>
+    <div class="k5-tag">${(K5CATS[q.c]&&K5CATS[q.c].length>2)?esc5(K5CATS[q.c]):""}</div>
+    ${q.v?`<div class="k5-vig">${esc5(q.v)}</div>`:""}
+    <div class="k5-q">${esc5(q.q)}</div>
+    <div class="k5-ch">${order.map(o=>`<button class="k5-c" data-o="${o}">${esc5(q.o[o])}</button>`).join("")}</div>
+    <div class="k5-fb" id="k5fb" hidden></div>
+  </div>`;
+  ov.querySelector("#k5x").onclick=k5Close;
+  ov.querySelectorAll(".k5-c").forEach(b=>b.onclick=()=>k5Pickd(+b.dataset.o));
+  ov.querySelector(".k5-sh").scrollTop=0;
+}
+function esc5(t){ return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function k5Pickd(o){
+  if(!k5Cur||k5Cur.answered) return; k5Cur.answered=true;
+  const q=K5BY[k5Cur.id], r=k5Record(k5Cur.id,o);
+  const k=k5Today(); k.n=Math.min(k.ids.length, k.n+1); save(); syncHub(); wsave();
+  document.querySelectorAll("#k5ov .k5-c").forEach(b=>{ const v=+b.dataset.o; b.disabled=true; if(v===q.a) b.classList.add("ok"); else if(v===o) b.classList.add("ng"); else b.classList.add("dim"); });
+  const last=k5Count()>=K5_N;
+  const fb=document.getElementById("k5fb"); fb.hidden=false;
+  fb.innerHTML=`<div class="k5-vd ${r.right?"ok":"ng"}">${r.right?"正解":"不正解"}<span>${r.right?"次は"+["明日","明日","3日後","7日後","3週間後"][r.box]:"明日また出ます"}</span></div>
+    <p class="k5-exp">${esc5(q.e||"")}</p>${q.r?`<p class="k5-ref">出典　${esc5(q.r)}</p>`:""}
+    <button class="cta k5-next" id="k5n">${last?"完了 ✓":"次へ →"}</button>`;
+  document.getElementById("k5n").onclick=()=>{ if(last){ k5Close(); toast("今日の巻物クリア！"); return; } const k=k5Today(); const nx=k.ids[k.n]; if(nx) k5Show(nx); else k5Open(); };
+  requestAnimationFrame(()=>{ const nb=document.getElementById("k5n"); if(nb) nb.scrollIntoView({block:"nearest",behavior:"smooth"}); });
+}
+function k5Close(){
+  const ov=document.getElementById("k5ov"); if(ov) ov.remove(); document.body.classList.remove("k5-lock"); k5Cur=null;
+  if(tab==="home"){ const y=window.scrollY; home(); hdr(); window.scrollTo(0,y); }
 }
 
 /* ---------- render ---------- */
@@ -876,8 +1053,8 @@ function home(){
         .sort((a,b)=>(coOf(a.c).id===S.course)-(coOf(b.c).id===S.course));
       return others.length? `<div class="alt"><div class="eyebrow">気分を変えて、別の章から</div><div class="alt-row">${others.map(o=>`<button class="alt-c" data-l="${o.l.id}"><span>${COURSES.find(x=>x.chapters.includes(o.c)).id!==S.course? COURSES.find(x=>x.chapters.includes(o.c)).short+" · ":""}${o.c.n} ${o.c.t}</span><b>${o.l.t}</b></button>`).join("")}</div></div>`:""; })()}
     ${walletCard()}
+    ${k5Tiles()}
     <div class="grid2">
-      <div class="tile streak"><div class="k">継続日数（全アプリ）</div><div class="v">${unionStreak()}<small style="color:#3a0f22"> 日</small></div></div>
       <div class="tile"><div class="k">学習完了</div><div class="v">${done}<small>/${tp}</small></div><div class="bar"><i style="width:${done/tp*100}%"></i></div></div>
       <div class="tile"><div class="k">クイズ正答率</div><div class="v">${acc}<small>% (${S.quiz.n}問)</small></div></div>
       <div class="tile"><div class="k">${r.name}</div><div class="v">Lv.${r.lv}</div><div class="bar"><i style="width:${prog}%"></i></div><div class="k" style="margin-top:6px">${nr? "次まで "+(nr.xp-S.xp)+" XP":"最高ランク"}</div></div>
@@ -893,6 +1070,7 @@ function home(){
   app.querySelectorAll(".alt-c").forEach(b=>b.onclick=()=>{ const c=ALL_CH.find(x=>x.lessons.some(l=>l.id===b.dataset.l)); openLesson(c, c.lessons.find(l=>l.id===b.dataset.l)); });
   const hc=document.getElementById("hcal"); if(hc) hc.onclick=()=>{ calOff=0; calendar(); window.scrollTo(0,0); };
   bindWallet(home);
+  const k5b=document.getElementById("k5go"); if(k5b) k5b.onclick=k5Open;
   const rb=document.getElementById("restBtn"); if(rb) rb.onclick=()=>{ restMode=!restMode; hcOff=0; const y=window.scrollY; home(); window.scrollTo(0,y); };
   const hp=document.getElementById("hmP"), hn=document.getElementById("hmN"); const rr=()=>{ const y=window.scrollY; home(); window.scrollTo(0,y); };
   if(hp) hp.onclick=()=>{ if(hcOff>0){ hcOff--; rr(); } }; if(hn) hn.onclick=()=>{ if(hcOff<1){ hcOff++; rr(); } };
