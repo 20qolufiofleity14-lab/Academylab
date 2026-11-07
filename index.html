@@ -475,14 +475,10 @@ body.k5-lock{overflow:hidden}
 .hstat .tile{padding:10px 14px}.hstat .tile .v{font-size:20px;line-height:1.25}.hstat .bar{margin-top:4px}.sr-k{display:flex;justify-content:space-between;gap:6px}.sr-k span{font-size:11px;white-space:nowrap}
 .pr{background:var(--panel);border:1px solid var(--line);clip-path:var(--cut);padding:12px 14px;display:flex;flex-direction:column;gap:10px}
 .pr-h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
-.p5{background:var(--panel);border:1px solid var(--line);clip-path:var(--cut);padding:10px 14px;display:flex;align-items:center;gap:10px}
-.p5 svg{width:118px;height:118px;flex:none}
-.p5-r{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;font-size:12px}
-.p5-r .eyebrow{margin-bottom:2px}
-.p5-row{display:flex;align-items:center;gap:6px}.p5-row b{font-family:var(--f-num);width:52px;letter-spacing:.02em}.p5-row span{color:var(--muted);flex:1}
-.p5-row i{display:inline-block;width:8px;height:8px;border-radius:50%;border:1px solid var(--c);flex:none}.p5-row i.on{background:var(--c)}
-.p5-row em{font-style:normal;font-family:var(--f-num);color:var(--fg)}
-.p5-low{margin-top:3px;color:var(--muted);font-size:11px;line-height:1.4}.p5-low b{color:var(--fg)}
+.pr-body{display:flex;gap:10px;align-items:center}
+.pr-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+.p5m{flex:none;width:96px;display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--muted);font-size:10px;gap:1px}
+.p5m svg{width:96px;height:96px;display:block}
 .pr-logo{width:24px;height:24px;display:grid;place-items:center;background:#e8322e;color:#140a0a;font-family:var(--f-num);font-size:14px;clip-path:var(--cut-s)}
 .pr-h em{font-style:normal;font-weight:500;font-size:11px;color:var(--muted)}
 .pr-more{margin-left:auto;font-size:12px;font-weight:500;color:var(--cyan);text-decoration:none;padding:8px 0}
@@ -1083,33 +1079,29 @@ function p5On(d,id,k,st){ if(d.pil&&d.pil[k]&&d.pil[k][id]) return true;
   if(id==="mind") return !!(d.good&&Array.isArray(d.good[k])&&d.good[k].some(x=>x));
   if(id==="learn") return st.has(k) || !!(d.fq&&d.fq[k]&&d.fq[k].n>0) || Object.values(d.fread||{}).includes(k);
   return false; }
-function prime5Card(){
+function p5Svg(){
   const d=prLoad(), st=p5Study(), t=new Date(), ws=new Date(t.getFullYear(),t.getMonth(),t.getDate()); ws.setDate(ws.getDate()-((ws.getDay()+6)%7));
   const ks=[]; for(let i=0;i<7;i++){ const x=new Date(ws); x.setDate(ws.getDate()+i); ks.push(dkey(x)); }
-  const today=dkey(t), cnt=P5.map(p=>ks.filter(k=>p5On(d,p.id,k,st)).length), tod=P5.map(p=>p5On(d,p.id,today,st));
-  const n=5, cx=60, cy=60, r=44, pt=(i,v)=>{ const a=-Math.PI/2+i*2*Math.PI/n; return [cx+r*v*Math.cos(a), cy+r*v*Math.sin(a)].map(z=>z.toFixed(1)); };
-  let svg=`<svg viewBox="0 0 120 120" role="img" aria-label="今週の5つの柱">`;
+  const cnt=P5.map(p=>ks.filter(k=>p5On(d,p.id,k,st)).length);
+  const n=5, cx=50, cy=52, r=36, pt=(i,v)=>{ const a=-Math.PI/2+i*2*Math.PI/n; return [cx+r*v*Math.cos(a), cy+r*v*Math.sin(a)].map(z=>z.toFixed(1)); };
+  let svg=`<svg viewBox="0 0 100 100" role="img" aria-label="今週の5つの柱 ${P5.map((p,i)=>p.n+" "+cnt[i]).join("、")}">`;
   [.33,.66,1].forEach(f=>{ svg+=`<polygon points="${P5.map((_,i)=>pt(i,f).join(",")).join(" ")}" fill="none" stroke="#2b2b33"/>`; });
   P5.forEach((_,i)=>{ const [x,y]=pt(i,1); svg+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#2b2b33"/>`; });
   svg+=`<polygon points="${cnt.map((c,i)=>pt(i,Math.max(.05,c/7)).join(",")).join(" ")}" fill="rgba(232,50,46,.28)" stroke="#e8322e" stroke-width="2" stroke-linejoin="round"/>`;
   P5.forEach((p,i)=>{ const [x,y]=pt(i,1); svg+=`<circle cx="${x}" cy="${y}" r="3" fill="${p.c}"/>`; });
-  svg+=`</svg>`;
-  const mn=Math.min(...cnt), low=P5.filter((_,i)=>cnt[i]===mn);
-  const tip= Math.max(...cnt)===0? "今週はまだ白紙。どれか1つで形ができはじめます"
-    : `いちばん細い柱：<b>${low.map(p=>p.n).join("・")}</b>（${low.map(p=>p.h).join("・")}）`;
-  return `<div class="p5">${svg}<div class="p5-r"><div class="eyebrow">PRIME · 今週の5つの柱</div>
-    ${P5.map((p,i)=>`<div class="p5-row" style="--c:${p.c}"><i class="${tod[i]?"on":""}" title="今日"></i><b style="color:${p.c}">${p.n}</b><span>${p.j}</span><em>${cnt[i]}/7</em></div>`).join("")}
-    <div class="p5-low">${tip}</div></div></div>`;
+  return `<a class="p5m" href="${prUrl()}">${svg+"</svg>"}<span>今週の5つの柱</span></a>`;
 }
 function primeCard(){
   const d=prLoad(), k=dkey(new Date()), w=d.w[k], last=prLastW(d,k), lg=d.log[k], done=!!(lg&&lg.lv>0), wk=prWeek(d);
   const diff=(w!=null&&last!=null)? Math.round((w-last)*10)/10 : null;
   return `<div class="pr">
     <div class="pr-h"><b class="pr-logo">P</b><span>PRIME</span><em>今週 ${wk}/${d.target}回</em><a class="pr-more" href="${prUrl()}">PRIMEで深める →</a></div>
+    <div class="pr-body"><div class="pr-main">
     ${(w!=null&&!prEdit)? `<div class="pr-w done"><span>体重</span><b>${w.toFixed(1)}<small> kg</small></b>${diff!=null?`<em>${diff>0?"+":""}${diff.toFixed(1)}</em>`:""}<button class="back pr-fix" id="prFix">直す</button></div>`
       : `<div class="pr-w"><label for="prW">体重</label><input id="prW" type="number" inputmode="decimal" step="0.1" placeholder="${last!=null?last.toFixed(1):"例 65.0"}" value="${w!=null?w:""}"><span class="pr-u">kg</span><button class="cta pr-ws" id="prWs">記録</button></div>`}
-    ${done? `<div class="pr-done">✓ 今日の一票（${PR_LV[lg.lv].n}・${(lg.items||[]).length}種目）<button class="back pr-fix" id="prAgain">記録しなおす</button></div>`
+    ${done? `<div class="pr-done"><span style="white-space:nowrap">✓ 一票（${PR_LV[lg.lv].n}・${(lg.items||[]).length}種目）</span><button class="back pr-fix" id="prAgain" aria-label="記録しなおす">直す</button></div>`
       : `<div class="pr-lv">${[1,2,3].map(l=>`<button class="pr-lb" data-prl="${l}"><b>${PR_LV[l].n}</b><span>${PR_LV[l].s}</span></button>`).join("")}</div>`}
+    </div>${p5Svg()}</div>
   </div>`;
 }
 function bindPrime(){
@@ -1235,7 +1227,6 @@ function home(){
       <div class="tile"><div class="k sr-k">${r.name}<span>${nr? "次まで "+(nr.xp-S.xp)+" XP":"最高ランク"}</span></div><div class="v">Lv.${r.lv}</div><div class="bar"><i style="width:${prog}%"></i></div></div>
     </div>
     ${primeCard()}
-    ${prime5Card()}
     <div class="home-cal">
       <div class="hub-h"><div class="eyebrow">CALENDAR · ${hcM().getMonth()+1}月</div>${restMode? `<div class="rest-nav"><button class="back" id="hmP" ${hcOff<=0?"disabled":""}>‹</button><button class="back" id="hmN" ${hcOff>=1?"disabled":""}>›</button></div>`:""}<button class="back" id="hcal">くわしく ›</button></div>
       ${calGrid(hcM().getFullYear(),hcM().getMonth(),hcOff===0)}
