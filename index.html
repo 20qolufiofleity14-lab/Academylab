@@ -61,6 +61,11 @@ button{font:inherit;color:inherit}
 .brand{min-width:0}
 .brand b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--f-display);font-weight:400;font-size:17px;line-height:1.2;letter-spacing:.02em}
 .brand span{font-size:11px;color:var(--muted);letter-spacing:.12em}
+/* 今日の各アプリランプ：やった日はアプリの色で点灯 */
+.brand .lamps{display:flex;gap:5px;margin-top:5px;letter-spacing:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.lamps i{--c:#888;flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-family:var(--f-display);font-size:10px;line-height:1;font-weight:700;color:color-mix(in srgb,var(--c) 70%,transparent);border:1.5px solid color-mix(in srgb,var(--c) 50%,transparent);background:color-mix(in srgb,var(--c) 8%,transparent);transition:background .3s,box-shadow .3s}
+.lamps i.on{background:var(--c);border-color:var(--c);color:#140a0a;box-shadow:0 0 7px color-mix(in srgb,var(--c) 75%,transparent)}
+.lamps.many{gap:3px}.lamps.many i{width:16px;height:16px;font-size:9px}
 .stat{margin-left:auto;display:flex;align-items:center;gap:8px;font-family:var(--f-num);font-size:12px;white-space:nowrap}
 .lv{background:var(--hot);color:#1a0612;border-radius:999px;padding:3px 9px;font-weight:700}
 .xp{color:var(--amber)}
@@ -517,7 +522,7 @@ body.k5-lock{overflow:hidden}
   <header class="top">
     <button class="menu-btn" id="menuBtn" aria-label="メニューを開く"><span></span><span></span><span></span></button>
     <div class="logo" id="hdrLogo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1a0612" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v6M12 15v6M6 9h12M6 15h12"/></svg><i></i></div>
-    <div class="brand"><b>内分泌アカデミー</b><span>毎日5分 · 基礎から</span></div>
+    <div class="brand"><b>内分泌アカデミー</b><span class="lamps" id="hdrLamps" role="button" tabindex="0" aria-label="今日の各アプリ（タップでアプリ一覧）">毎日5分 · 基礎から</span></div>
     <div class="stat"><span class="who" id="hdrName"></span><div class="stat-row"><span class="lv" id="hdrLv">Lv.1</span><span class="xp" id="hdrXp">0 XP</span></div></div>
   </header>
   <main id="app"></main>
@@ -737,7 +742,7 @@ function syncHub(){
   S.hub.forEach(a=>{ const f=DETECT[a.id]; if(!f) return;
     const r=f(); const days=r.days.map(normDay).filter(Boolean);
     a.auto = r.keep? [...new Set([...(a.auto||[]), ...days])] : days; a.info=r.info; });
-  save();
+  save(); try{ hdrLamps(); }catch(e){}
 }
 function dkey(d){ return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
 function appDays(a){ return a.self? S.days : [...new Set([...(a.days||[]), ...(a.auto||[])])]; }
@@ -1185,7 +1190,17 @@ function hdr(){ checkBadges();
   const lg=document.getElementById("hdrLogo"); lg.className="logo"+(S.av?" has-av fr-"+rank().fr:"");
   lg.querySelector("i").style.backgroundImage=S.av?`url(${S.av})`:"";
   document.getElementById("hdrXp").textContent=S.xp.toLocaleString()+" XP";
+  hdrLamps();
 }
+/* ヘッダーのランプ：マイアプリの並び順で、今日やったアプリをその色で点灯（アプリが増えても自動で並ぶ） */
+function hdrLamps(){ const el=document.getElementById("hdrLamps"); if(!el||!Array.isArray(S.hub)) return;
+  const t=dkey(new Date());
+  el.innerHTML=S.hub.map(a=>{ const on=new Set(appDays(a)).has(t);
+    return `<i class="${on?"on":""}" style="--c:${a.color}" title="${a.name}${on?"：今日済み":"：まだ"}">${a.mark}</i>`; }).join("");
+  el.classList.toggle("many", S.hub.length>7);
+  el.setAttribute("aria-label","今日："+S.hub.map(a=>a.name+(new Set(appDays(a)).has(t)?"済み":"まだ")).join("、"));
+}
+{ const el=document.getElementById("hdrLamps"); if(el){ const go=()=>{ if(typeof setTab==="function") setTab("hub"); }; el.onclick=go; el.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(); } }; } }
 function setTab(t){
   tab=t; document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   ({home,learn,quiz,road,hub:hubScreen})[t](); hdr(); window.scrollTo(0,0);
@@ -1278,7 +1293,7 @@ function bindHub(){
     if(a.self){ toast(new Set(S.days).has(todayStr())? "今日の読み物は完了済み":"レッスンを読むと自動で付きます"); return; }
     const k=dkey(new Date()); a.days=a.days||[];
     if(a.days.includes(k)) a.days=a.days.filter(x=>x!==k); else { a.days.push(k); toast(a.name+" 今日やった！"); }
-    save(); hubScreen();
+    save(); hubScreen(); hdrLamps();
   });
   const e=document.getElementById("hubEdit"); if(e) e.onclick=hubEditor;
   const c=document.getElementById("hubCal"); if(c) c.onclick=()=>{ calOff=0; calendar(); window.scrollTo(0,0); };
