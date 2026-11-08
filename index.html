@@ -1076,8 +1076,9 @@ function p5On(d,id,k,st){ if(d.pil&&d.pil[k]&&d.pil[k][id]) return true;
   if(id==="body") return !!(d.log[k]&&d.log[k].lv>0);
   if(id==="style") return !!(d.groom&&d.groom[k]&&d.groom[k].length);
   if(id==="social") return !!(d.thanks&&d.thanks[k]&&String(d.thanks[k]).trim());
-  if(id==="mind") return !!(d.good&&Array.isArray(d.good[k])&&d.good[k].some(x=>x));
-  if(id==="learn") return st.has(k) || !!(d.fq&&d.fq[k]&&d.fq[k].n>0) || Object.values(d.fread||{}).includes(k);
+  const am=(d.am&&d.am[k])||{};
+  if(id==="mind") return !!(d.good&&Array.isArray(d.good[k])&&d.good[k].some(x=>x)) || !!(Array.isArray(am.g)&&am.g.some(x=>x)) || !!(am.one||am.j);
+  if(id==="learn") return st.has(k) || !!am.ppr || !!(d.fq&&d.fq[k]&&d.fq[k].n>0) || Object.values(d.fread||{}).includes(k);
   return false; }
 function p5Svg(){
   const d=prLoad(), st=p5Study(), t=new Date(), ws=new Date(t.getFullYear(),t.getMonth(),t.getDate()); ws.setDate(ws.getDate()-((ws.getDay()+6)%7));
