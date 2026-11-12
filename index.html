@@ -480,9 +480,28 @@ body.k5-lock{overflow:hidden}
 .hstat .tile{padding:10px 14px}.hstat .tile .v{font-size:20px;line-height:1.25}.hstat .bar{margin-top:4px}.sr-k{display:flex;justify-content:space-between;gap:6px}.sr-k span{font-size:11px;white-space:nowrap}
 .pr{background:var(--panel);border:1px solid var(--line);clip-path:var(--cut);padding:12px 14px;display:flex;flex-direction:column;gap:10px}
 .pr-h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.pr-jr{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pr-jb{display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;border:1px solid var(--line);background:var(--panel-2,#221a33);color:var(--fg);font:inherit;font-size:13px;cursor:pointer;clip-path:var(--cut-s)}
+.pr-jb i{font-style:normal;font-size:15px}.pr-jb small{color:var(--muted);font-size:10px}
+.pr-jb.on{border-color:#f2c14e;background:color-mix(in srgb,#f2c14e 14%,var(--panel-2,#221a33))}.pr-jb.on small{color:#f2c14e}
+.pr-jb.nt.on{border-color:#9fa8ff;background:color-mix(in srgb,#9fa8ff 14%,var(--panel-2,#221a33))}.pr-jb.nt.on small{color:#9fa8ff}
+.jr-in{width:100%;box-sizing:border-box;height:44px;margin-top:6px;padding:0 12px;font:inherit;font-size:15px;color:var(--fg);background:var(--panel-2,#221a33);border:1px solid var(--line);border-radius:0}
+.jr-lb{display:block;margin-top:14px;font-size:12px;color:var(--muted)}.jr-lb span{font-size:11px}
+.jr-one{margin-top:8px;padding:10px 12px;border-left:3px solid #f2c14e;background:var(--panel-2,#221a33);font-weight:700}
+.jr-od{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.jr-od button,.p5c{min-height:42px;border:1px solid var(--line);background:var(--panel-2,#221a33);color:var(--muted);font:inherit;font-size:13px;cursor:pointer}
+.jr-od button.on{border-color:#f2c14e;color:var(--fg);background:color-mix(in srgb,#f2c14e 16%,var(--panel-2,#221a33))}
+.jr-carry{display:block;width:100%;text-align:left;margin-top:8px;padding:9px 12px;border:1px dashed var(--line);background:none;color:var(--muted);font:inherit;font-size:12px;cursor:pointer}
+.p5s{margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-left:3px solid var(--c);background:color-mix(in srgb,var(--c) 5%,var(--panel-2,#221a33))}
+.p5s-h{display:flex;align-items:center;gap:8px}.p5s-h b{font-family:var(--f-num);color:var(--c);letter-spacing:.03em}.p5s-h span{font-size:12px;color:var(--muted)}
+.p5s-h em{margin-left:auto;font-style:normal;font-size:11px;color:var(--muted)}.p5s-h em.on{color:var(--c)}
+.p5s p{margin:6px 0 0;font-size:12px;color:var(--muted);line-height:1.5}
+.p5g{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.p5c{min-height:36px;padding:0 12px;border-radius:999px;font-size:12px}.p5c.on{border-color:var(--c);color:var(--fg);background:color-mix(in srgb,var(--c) 20%,var(--panel-2,#221a33))}
+.p5go{margin-top:8px;padding:8px 12px;font-size:12px}
 .pr-body{display:flex;gap:10px;align-items:center}
 .pr-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
-.p5m{flex:none;width:96px;display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--muted);font-size:10px;gap:1px}
+.p5m{background:none;border:0;padding:0;font:inherit;cursor:pointer;flex:none;width:96px;display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--muted);font-size:10px;gap:1px}
 .p5m svg{width:96px;height:96px;display:block}
 .pr-logo{width:24px;height:24px;display:grid;place-items:center;background:#e8322e;color:#140a0a;font-family:var(--f-num);font-size:14px;clip-path:var(--cut-s)}
 .pr-h em{font-style:normal;font-weight:500;font-size:11px;color:var(--muted)}
@@ -1082,7 +1101,7 @@ function p5On(d,id,k,st){ if(d.pil&&d.pil[k]&&d.pil[k][id]) return true;
   if(id==="style") return !!(d.groom&&d.groom[k]&&d.groom[k].length);
   if(id==="social") return !!(d.thanks&&d.thanks[k]&&String(d.thanks[k]).trim());
   const am=(d.am&&d.am[k])||{};
-  if(id==="mind") return !!(d.good&&Array.isArray(d.good[k])&&d.good[k].some(x=>x)) || !!(Array.isArray(am.g)&&am.g.some(x=>x)) || !!(am.one||am.j);
+  if(id==="mind") return !!(d.good&&Array.isArray(d.good[k])&&d.good[k].some(x=>x)) || !!(Array.isArray(am.g)&&am.g.some(x=>x));
   if(id==="learn") return st.has(k) || !!am.ppr || !!(d.fq&&d.fq[k]&&d.fq[k].n>0) || Object.values(d.fread||{}).includes(k);
   return false; }
 function p5Svg(){
@@ -1095,7 +1114,7 @@ function p5Svg(){
   P5.forEach((_,i)=>{ const [x,y]=pt(i,1); svg+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#2b2b33"/>`; });
   svg+=`<polygon points="${cnt.map((c,i)=>pt(i,Math.max(.05,c/7)).join(",")).join(" ")}" fill="rgba(232,50,46,.28)" stroke="#e8322e" stroke-width="2" stroke-linejoin="round"/>`;
   P5.forEach((p,i)=>{ const [x,y]=pt(i,1); svg+=`<circle cx="${x}" cy="${y}" r="3" fill="${p.c}"/>`; });
-  return `<a class="p5m" href="${prUrl()}">${svg+"</svg>"}<span>今週の5つの柱</span></a>`;
+  return `<button class="p5m" id="p5Open" aria-label="今日の5つの柱をひらく">${svg+"</svg>"}<span>5つの柱 ›</span></button>`;
 }
 function primeCard(){
   const d=prLoad(), k=dkey(new Date()), w=d.w[k], last=prLastW(d,k), lg=d.log[k], done=!!(lg&&lg.lv>0), wk=prWeek(d);
@@ -1107,6 +1126,8 @@ function primeCard(){
       : `<div class="pr-w"><label for="prW">体重</label><input id="prW" type="number" inputmode="decimal" step="0.1" placeholder="${last!=null?last.toFixed(1):"例 65.0"}" value="${w!=null?w:""}"><span class="pr-u">kg</span><button class="cta pr-ws" id="prWs">記録</button></div>`}
     ${done? `<div class="pr-done"><span style="white-space:nowrap">✓ 一票（${PR_LV[lg.lv].n}・${(lg.items||[]).length}種目）</span><button class="back pr-fix" id="prAgain" aria-label="記録しなおす">直す</button></div>`
       : `<div class="pr-lv">${[1,2,3].map(l=>`<button class="pr-lb" data-prl="${l}"><b>${PR_LV[l].n}</b><span>${PR_LV[l].s}</span></button>`).join("")}</div>`}
+    ${(()=>{ const a=(d.am&&d.am[k])||{}, mo=!!a.one, nt=!!((d.good&&Array.isArray(d.good[k])&&d.good[k].some(x=>x))||a.od);
+      return `<div class="pr-jr"><button class="pr-jb ${mo?"on":""}" id="prJm"><i>☀</i>朝<small>${mo?"✓ 決めた":"方向を決める"}</small></button><button class="pr-jb nt ${nt?"on":""}" id="prJn"><i>☾</i>夜<small>${nt?"✓ 締めた":"ふりかえり"}</small></button></div>`; })()}
     </div>${p5Svg()}</div>
   </div>`;
 }
@@ -1117,6 +1138,82 @@ function bindPrime(){
   const fx=document.getElementById("prFix"); if(fx) fx.onclick=()=>{ prEdit=true; rr(); };
   const ag=document.getElementById("prAgain"); if(ag) ag.onclick=()=>{ const d=prLoad(); prSession(d.log[dkey(new Date())].lv); };
   app.querySelectorAll("[data-prl]").forEach(b=>b.onclick=()=>prSession(+b.dataset.prl));
+  const jm=document.getElementById("prJm"); if(jm) jm.onclick=prMorning;
+  const jn=document.getElementById("prJn"); if(jn) jn.onclick=prNight;
+  const po=document.getElementById("p5Open"); if(po) po.onclick=prPillars;
+}
+/* ---------- 朝・夜のジャーナル：PRIMEの D.am（朝の方向）／D.good・D.nt・D.thanks（夜）に直接書く ---------- */
+const prObj=(d,f)=>{ if(!d[f]||typeof d[f]!=="object") d[f]={}; return d[f]; };
+function prMorning(){
+  const d=prLoad(), k=dkey(new Date()), a=(d.am&&d.am[k])||{}, y=new Date(); y.setDate(y.getDate()-1);
+  const carry=((d.nt&&d.nt[dkey(y)])||{}).carry||"";
+  const sh=prSheet(`<div class="k5-hd"><b>☀ 朝：方向を決める<em>1分</em></b><button class="k5-x" id="prX" aria-label="閉じる">✕</button></div>
+    <p class="k5-note">決めたら、すぐ論文・作業へ。書けない日はなくてOK。</p>
+    ${carry&&!a.one?`<button class="jr-carry" id="jCarry">昨夜の持ち越し：<b style="color:var(--fg)">${esc5(carry)}</b>　↑ これにする</button>`:""}
+    <label class="jr-lb">今日の一番大事なこと1つ</label><input class="jr-in" id="jOne" placeholder="例：SGA論文のアブストと図を読む" value="${esc5(a.one||"")}">
+    <label class="jr-lb">いつ・どこで</label><input class="jr-in" id="jWhen" placeholder="例：子どもの朝食後、iPadで" value="${esc5(a.when||"")}">
+    <label class="jr-lb">つまずきそうなこと → こうする（任意）</label><input class="jr-in" id="jOb" placeholder="例：スマホを見たくなったら → 机に伏せる" value="${esc5(a.ob||"")}">
+    <p class="k5-note">X投稿・論文の3朝読みの記録は PRIME の MORNING で。</p>
+    <div class="pr-acts"><button class="back" id="prCancel">やめる</button><button class="cta" id="jSave">決めた</button></div>`);
+  sh.querySelector("#prX").onclick=()=>prClose(); sh.querySelector("#prCancel").onclick=()=>prClose();
+  const jc=sh.querySelector("#jCarry"); if(jc) jc.onclick=()=>{ sh.querySelector("#jOne").value=carry; jc.remove(); sh.querySelector("#jWhen").focus(); };
+  sh.querySelector("#jSave").onclick=()=>{ const d2=prLoad(), am=prObj(d2,"am"), b=Object.assign({},am[k]||{});
+    [["one","#jOne"],["when","#jWhen"],["ob","#jOb"]].forEach(([f,id])=>{ const v=sh.querySelector(id).value.trim(); if(v) b[f]=v; else delete b[f]; });
+    if(Object.keys(b).length) am[k]=b; else delete am[k]; prSave(d2); syncHub(); wsave(); toast(b.one?"今日の方向、決まりました":"記録しました"); prClose(true); };
+  setTimeout(()=>{ const f=sh.querySelector("#jOne"); if(f&&!f.value&&!carry) f.focus(); },250);
+}
+function prNight(){
+  const d=prLoad(), k=dkey(new Date()), a=(d.am&&d.am[k])||{}, g=(d.good&&d.good[k])||["","",""], nt=(d.nt&&d.nt[k])||{}; let od=a.od||"";
+  const sh=prSheet(`<div class="k5-hd"><b>☾ 夜：今日を締める</b><button class="k5-x" id="prX" aria-label="閉じる">✕</button></div>
+    ${a.one? `<label class="jr-lb">けさ決めた「一番大事なこと」</label><div class="jr-one">${esc5(a.one)}</div>
+      <div class="jr-od">${[["ok","✓ できた"],["half","△ ちょっと"],["next","→ 明日へ"]].map(([v,n])=>`<button data-od="${v}" class="${od===v?"on":""}">${n}</button>`).join("")}</div>` : ""}
+    <label class="jr-lb">今日よかったこと3つ <span style="color:#5ee6a0">→ MIND</span></label>
+    ${[0,1,2].map(i=>`<input class="jr-in jg" placeholder="${["例：外来で親御さんに安心してもらえた","例：子どもと遊んだ","例：ミニでも動けた"][i]}" value="${esc5(g[i]||"")}">`).join("")}
+    <label class="jr-lb">なぜうまくいった？（どれか1つに一言・任意）</label><input class="jr-in" id="jWhy" placeholder="例：先に結論から説明したから" value="${esc5(nt.why||"")}">
+    <label class="jr-lb">今日のありがとう（誰に／何を）<span style="color:#ff6a3d"> → SOCIAL</span></label><input class="jr-in" id="jThx" placeholder="例：看護師さんに夜勤のお礼を言った" value="${esc5((d.thanks&&d.thanks[k])||"")}">
+    <label class="jr-lb">明日に持ち越すこと（書いて手放す）</label><input class="jr-in" id="jCarry" placeholder="例：SGA論文の本文" value="${esc5(nt.carry||"")}">
+    <p class="k5-note">寝た時間・起きた時間は PRIME の NIGHT で。</p>
+    <div class="pr-acts"><button class="back" id="prCancel">やめる</button><button class="cta" id="jSave">締める</button></div>`);
+  sh.querySelector("#prX").onclick=()=>prClose(); sh.querySelector("#prCancel").onclick=()=>prClose();
+  sh.querySelectorAll("[data-od]").forEach(b=>b.onclick=()=>{ od=od===b.dataset.od?"":b.dataset.od; sh.querySelectorAll("[data-od]").forEach(x=>x.classList.toggle("on",x.dataset.od===od)); });
+  sh.querySelector("#jSave").onclick=()=>{ const d2=prLoad(), am=prObj(d2,"am"), good=prObj(d2,"good"), th=prObj(d2,"thanks"), nts=prObj(d2,"nt");
+    const gg=[...sh.querySelectorAll(".jg")].map(i=>i.value.trim()); if(gg.some(x=>x)) good[k]=gg; else delete good[k];
+    const tx=sh.querySelector("#jThx").value.trim(); if(tx) th[k]=tx; else delete th[k];
+    const n2={why:sh.querySelector("#jWhy").value.trim(),carry:sh.querySelector("#jCarry").value.trim()}; Object.keys(n2).forEach(x=>{ if(!n2[x]) delete n2[x]; }); if(Object.keys(n2).length) nts[k]=n2; else delete nts[k];
+    const b=Object.assign({},am[k]||{}); if(od) b.od=od; else delete b.od; if(Object.keys(b).length) am[k]=b; else delete am[k];
+    prSave(d2); syncHub(); wsave(); toast("今日を締めました。おやすみなさい"); prClose(true); };
+}
+/* ---------- 5つの柱：タップで今日やることが分かり、その場で一票 ---------- */
+const PR_GROOM=[{id:"hair",n:"髪"},{id:"face",n:"髭・眉"},{id:"skin",n:"肌（洗顔・保湿）"},{id:"nail",n:"爪"},{id:"cloth",n:"服（サイズ・シワ）"},{id:"pose",n:"姿勢（胸を開く）"}];
+function prPillars(sc){
+  const d=prLoad(), k=dkey(new Date()), st=p5Study(), on=id=>p5On(d,id,k,st), gr=(d.groom&&d.groom[k])||[], lg=d.log[k];
+  const learnAuto=st.has(k)||!!(((d.am||{})[k]||{}).ppr)||!!(d.fq&&d.fq[k]&&d.fq[k].n>0)||Object.values(d.fread||{}).includes(k), learnTap=!!(d.pil&&d.pil[k]&&d.pil[k].learn);
+  const hd=(p,txt)=>`<div class="p5s-h"><b>${p.n}</b><span>${p.j}</span><em class="${on(p.id)?"on":""}">${on(p.id)?"✓ 今日 一票":"まだ"}</em></div>${txt?`<p>${txt}</p>`:""}`;
+  const P=Object.fromEntries(P5.map(p=>[p.id,p]));
+  const sh=prSheet(`<div class="k5-hd"><b>今日の5つの柱</b><button class="k5-x" id="prX" aria-label="閉じる">✕</button></div>
+    <p class="k5-note">どれか1つでも一票。細かく見たいときは PRIME へ。</p>
+    <div class="p5s" style="--c:${P.body.c}">${hd(P.body, lg&&lg.lv>0? `${PR_LV[lg.lv].n}・${(lg.items||[]).length}種目 やった` : "量を選んで、やった種目にチェック。ミニは1分・どれか1つでOK。")}
+      ${lg&&lg.lv>0?"":`<div class="p5g">${[1,2,3].map(l=>`<button class="p5c" data-p5l="${l}">${PR_LV[l].n}</button>`).join("")}</div>`}</div>
+    <div class="p5s" style="--c:${P.style.c}">${hd(P.style,"体重を測ったら、鏡の前で。整えたものをタップ（1つで一票）。")}
+      <div class="p5g">${PR_GROOM.map(g=>`<button class="p5c ${gr.includes(g.id)?"on":""}" data-p5g="${g.id}">${g.n}</button>`).join("")}</div></div>
+    <div class="p5s" style="--c:${P.social.c}">${hd(P.social,"今日、誰かにありがとう・声かけをしたら一言。")}
+      <input class="jr-in" id="p5Thx" placeholder="例：看護師さんに夜勤のお礼を言った" value="${esc5((d.thanks&&d.thanks[k])||"")}"></div>
+    <div class="p5s" style="--c:${P.learn.c}">${hd(P.learn, learnAuto? "アカデミー・巻物・論文などで学習済み。自動で点いています。" : "アカデミーで1話・巻物5問・論文1段階のどれかで自動で点きます。本などで学んだ日はタップ。")}
+      ${learnAuto?"":`<div class="p5g"><button class="p5c ${learnTap?"on":""}" id="p5Learn">${learnTap?"✓ 本・論文などで学んだ":"本・論文などで学んだ"}</button></div>`}</div>
+    <div class="p5s" style="--c:${P.mind.c}">${hd(P.mind,"夜に、今日よかったこと3つ。")}
+      <button class="back p5go" id="p5Night">☾ 夜のふりかえりを開く</button></div>
+    <div class="pr-acts"><a class="back" href="${prUrl()}" style="text-decoration:none">PRIMEで深める</a><button class="cta" id="p5Done">閉じる</button></div>`);
+  if(sc) sh.scrollTop=sc;
+  const saveThx=()=>{ const tx=sh.querySelector("#p5Thx").value.trim(), d2=prLoad(), th=prObj(d2,"thanks"); if((th[k]||"")===tx) return; if(tx) th[k]=tx; else delete th[k]; prSave(d2); syncHub(); wsave(); };
+  const close=()=>{ saveThx(); prClose(true); };
+  sh.querySelector("#prX").onclick=close; sh.querySelector("#p5Done").onclick=close;
+  sh.querySelectorAll("[data-p5l]").forEach(b=>b.onclick=()=>{ saveThx(); prSession(+b.dataset.p5l); });
+  sh.querySelectorAll("[data-p5g]").forEach(b=>b.onclick=()=>{ const d2=prLoad(), g=prObj(d2,"groom"), arr=g[k]||[], id=b.dataset.p5g;
+    g[k]=arr.includes(id)? arr.filter(x=>x!==id) : [...arr,id]; if(!g[k].length) delete g[k]; prSave(d2); syncHub(); wsave(); if(!arr.length&&g[k]) toast("STYLE に一票");
+    saveThx(); prPillars(sh.scrollTop); });
+  const lb=sh.querySelector("#p5Learn"); if(lb) lb.onclick=()=>{ const d2=prLoad(), pl=prObj(d2,"pil"); pl[k]=pl[k]||{}; pl[k].learn=!pl[k].learn; if(!pl[k].learn) delete pl[k].learn; if(!Object.keys(pl[k]).length) delete pl[k];
+    prSave(d2); syncHub(); wsave(); if(pl[k]&&pl[k].learn) toast("LEARN に一票"); saveThx(); prPillars(sh.scrollTop); };
+  sh.querySelector("#p5Night").onclick=()=>{ saveThx(); prNight(); };
 }
 function prSheet(html){ prClose(); const ov=document.createElement("div"); ov.id="prov"; ov.className="k5-ov";
   ov.innerHTML=`<div class="k5-sh pr-sh" role="dialog" aria-modal="true">${html}</div>`; ov.addEventListener("click",e=>{ if(e.target===ov) prClose(); });
