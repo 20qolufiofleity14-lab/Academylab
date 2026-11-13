@@ -812,9 +812,16 @@ function nextLesson(){
 
 /* ---------- コイン財布（全アプリ共通）：各アプリの記録からコインを計算し、お休みチケットに使う ---------- */
 const WKEY="lab_wallet_v1";
-const TICKET_PRICE=10, TICKET_MAX=2, SHIFT_COIN=5, BACK_DAYS=7;
+const TICKET_PRICE=10, TICKET_MAX=3, TICKET_MONTH=3, SHIFT_COIN=5, BACK_DAYS=7;
 let W={spent:0, tickets:0, freeze:{}, shift:{}, hist:[], seenBal:null, asked:""};
 try{ const r=localStorage.getItem(WKEY); if(r) W=Object.assign(W, JSON.parse(r)); }catch(e){}
+W.buys=W.buys||{};
+/* 2026-11-13〜 チケットは「持てるのは最大3枚・買えるのは月3枚まで」。上限を超えて持っていた分はコインに戻す（1回だけ） */
+if(!W.capV1){ W.capV1=1; const over=(W.tickets||0)-TICKET_MAX; if(over>0){ W.tickets=TICKET_MAX; W.spent=Math.max(0,(W.spent||0)-over*TICKET_PRICE); (W.hist=W.hist||[]).unshift({d:(()=>{const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();})(),t:"チケットの上限(3枚)を超えた"+over+"枚をコインに戻しました",c:over*TICKET_PRICE}); } try{ localStorage.setItem(WKEY, JSON.stringify(W)); }catch(e){} }
+function tkMonthKey(){ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1); }
+function tkBoughtMonth(){ return W.buys[tkMonthKey()]||0; }
+/* 今買えるのはあと何枚か（所持上限・月の上限の小さい方） */
+function tkCanBuy(){ return Math.max(0, Math.min(TICKET_MAX-(W.tickets||0), TICKET_MONTH-tkBoughtMonth())); }
 function wsave(){ W.bal=walletBalance(); W.updated=Date.now(); try{ localStorage.setItem(WKEY, JSON.stringify(W)); }catch(e){} }
 /* 1日ごとの獲得コイン（努力の重さで差をつける） */
 const EARN_RULES=[
@@ -848,8 +855,10 @@ function walletBalance(){ return Math.max(0, earnedTotal()-(W.spent||0)); }
 function todayEarn(){ return dayTotal(earnByDay()[dkey(new Date())]||{}); }
 function whist(t,c){ W.hist.unshift({d:dkey(new Date()),t,c}); W.hist=W.hist.slice(0,40); }
 function buyTicket(){
+  if(tkBoughtMonth()>=TICKET_MONTH){ toast("今月はもう"+TICKET_MONTH+"枚買いました（来月また買えます）"); return false; }
+  if((W.tickets||0)>=TICKET_MAX){ toast("チケットは"+TICKET_MAX+"枚までしか持てません"); return false; }
   if(walletBalance()<TICKET_PRICE){ toast("コインがあと "+(TICKET_PRICE-walletBalance())+" 足りません"); return false; }
-  W.spent+=TICKET_PRICE; W.tickets++; whist("お休みチケットを購入",-TICKET_PRICE); wsave(); return true;
+  W.spent+=TICKET_PRICE; W.tickets++; W.buys[tkMonthKey()]=tkBoughtMonth()+1; whist("お休みチケットを購入",-TICKET_PRICE); wsave(); return true;
 }
 /* 連続が途切れている日（今日より前・7日以内・その前に続きがある日）を新しい順に */
 function gapDays(){
@@ -867,7 +876,7 @@ function useTicket(k){
 const REST_AHEAD=31;
 function refundTicket(){ W.tickets++; }
 /* 途切れた日をまとめて守る：足りない分だけ買ってから使う */
-function fixGaps(){ const g=gapDays(); const need=g.length-W.tickets; for(let i=0;i<need;i++){ if(!buyTicket()) return false; } for(const k of g.slice().reverse()) useTicket(k); return true; }
+function fixGaps(){ const g=gapDays(); const need=g.length-W.tickets; if(need>tkCanBuy()){ toast("チケットが足りません（今月あと"+tkCanBuy()+"枚まで買えます）"); return false; } for(let i=0;i<need;i++){ if(!buyTicket()) return false; } for(const k of g.slice().reverse()) useTicket(k); return true; }
 function cancelRest(k){ if(!W.freeze[k]) return; delete W.freeze[k]; refundTicket(); whist(fmtDay(k)+" のお休みを取り消し（チケットを返却）",0); wsave(); }
 /* お休みにした日に結局がんばった場合は、チケットを自動で返す */
 function settleRest(){ const U=unionDays(); let n=0; for(const k in W.freeze){ if(U.has(k)){ delete W.freeze[k]; refundTicket(); n++; } } if(n){ whist("お休み予定の日にがんばったので、チケットを"+n+"枚返却",0); wsave(); } }
@@ -886,7 +895,7 @@ function shiftToggle(k){ if(W.shift[k]){ delete W.shift[k]; whist(fmtDay(k)+" �
 /* ホームに出す財布のカード */
 function walletCard(){
   const bal=walletBalance(), te=todayEarn(), gaps=gapDays(), tk=dkey(new Date());
-  const need=Math.max(0,gaps.length-W.tickets), canFix = gaps.length && need*TICKET_PRICE<=bal;
+  const need=Math.max(0,gaps.length-W.tickets), canFix = gaps.length && need*TICKET_PRICE<=bal && need<=tkCanBuy();
   return `<div class="wal wal-c">
     <div class="wal-line">
       <div class="wal-bal"><b>${bal.toLocaleString()}</b><span>コイン</span>${te?`<em>+${te}</em>`:""}</div>
@@ -895,7 +904,7 @@ function walletCard(){
       <button class="back wal-more" id="wMore" aria-label="コインのくわしく">›</button>
     </div>
     ${gaps.length? `<div class="wal-gap"><p>${gaps.map(fmtDay).reverse().join("・")} がお休みで、連続が途切れそうです。</p>
-      ${canFix? `<button class="cta" id="wFix">${need? "チケットを"+need+"枚買って守る（"+need*TICKET_PRICE+"コイン）" : "チケット"+gaps.length+"枚で守る"}</button>`:`<p class="wal-s">コインがたまれば、${BACK_DAYS}日以内ならあとからでも守れます</p>`}</div>`:""}
+      ${canFix? `<button class="cta" id="wFix">${need? "チケットを"+need+"枚買って守る（"+need*TICKET_PRICE+"コイン）" : "チケット"+gaps.length+"枚で守る"}</button>`:`<p class="wal-s">${need>tkCanBuy()? "チケットが足りません（持てるのは"+TICKET_MAX+"枚・今月あと"+tkCanBuy()+"枚まで）" : "コインがたまれば、"+BACK_DAYS+"日以内ならあとからでも守れます"}</p>`}</div>`:""}
   </div>`;
 }
 function bindWallet(after){
@@ -915,8 +924,8 @@ function walletScreen(){
       <div class="tile"><div class="k">お休みチケット</div><div class="v">${W.tickets}<small> 枚</small></div></div>
     </div>
     <div class="tile"><div class="k">チケットを買う（${TICKET_PRICE}コイン）</div>
-      <p style="margin:4px 0 10px;font-size:13px">チケット1枚で1日お休みにでき、全体の連続日数が切れません。お休みの日は、ホームのカレンダーの下の「お休みの日を選ぶ」から指定できます（${BACK_DAYS}日前〜${REST_AHEAD}日先）。何枚でも持てます。</p>
-      <button class="cta" id="wBuy" ${bal<TICKET_PRICE?"disabled":""}>1枚買う</button>
+      <p style="margin:4px 0 10px;font-size:13px">チケット1枚で1日お休みにでき、全体の連続日数が切れません。お休みの日は、ホームのカレンダーの下の「お休みの日を選ぶ」から指定できます（${BACK_DAYS}日前〜${REST_AHEAD}日先）。持てるのは最大${TICKET_MAX}枚、買えるのは月${TICKET_MONTH}枚までです（今月あと${tkCanBuy()}枚）。</p>
+      <button class="cta" id="wBuy" ${(bal<TICKET_PRICE||!tkCanBuy())?"disabled":""}>${tkCanBuy()?"1枚買う":(W.tickets>=TICKET_MAX?"上限の"+TICKET_MAX+"枚まで持っています":"今月の分は買いました")}</button>
       ${gaps.length? `<p style="margin:12px 0 6px;font-size:13px">${gaps.map(fmtDay).reverse().join("・")} がお休みです（チケット${gaps.length}枚で連続がつながります）</p><button class="back" id="wFix2">チケットで守る</button>`:""}</div>
     <div class="tile"><div class="k">バイトした日（押し忘れは${BACK_DAYS}日前までOK）</div>
       <div class="wal-days">${days.slice().reverse().map(k=>`<button class="wal-shift sm ${W.shift[k]?"on":""}" data-sh="${k}">${fmtDay(k)}${k===days[0]?"（今日）":""}</button>`).join("")}</div></div>
@@ -958,12 +967,14 @@ function k5Load(){
   return k5Loading;
 }
 function k5Shuf(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.random()*(i+1)|0; [a[i],a[j]]=[a[j],a[i]]; } return a; }
-/* 選び方：苦手（落とした・まぐれ）を2問まで → 復習日が来た問 → 残りはランダム */
+/* 選び方（2026-11-13〜）：ホームの5問は「きっかけ作り」なので新規（まだ解いていない問）だけ。復習は巻物本体で。
+   新規が尽きたら：苦手（落とした・まぐれ）を2問まで → 復習日が来た問 → 残りはランダム */
 function k5Pick(n, ex){
   const cards=(readLS(SH_KEY)||{}).cards||{}, now=Date.now(), skip=new Set(ex), out=[];
   const add=q=>{ if(out.length<n && !skip.has(q.id) && !out.includes(q.id)) out.push(q.id); };
   const weak=K5Q.filter(q=>{ const c=cards[q.id]; if(!c||c.ret) return false; let w=0; if(c.w) for(const k in c.w) w+=c.w[k]; return w>0||(c.luck||0)>0; });
   const due=K5Q.filter(q=>{ const c=cards[q.id]; return c&&!c.ret&&c.due&&c.due<=now; });
+  const fresh=K5Q.filter(q=>!cards[q.id]); k5Shuf(fresh).forEach(add);
   k5Shuf(weak).slice(0,2).forEach(add); k5Shuf(due).forEach(add); k5Shuf(K5Q).forEach(add);
   return out;
 }
@@ -1292,10 +1303,12 @@ function hdr(){ checkBadges();
 /* ヘッダーのランプ：マイアプリの並び順で、今日やったアプリをその色で点灯（アプリが増えても自動で並ぶ） */
 function hdrLamps(){ const el=document.getElementById("hdrLamps"); if(!el||!Array.isArray(S.hub)) return;
   const t=dkey(new Date());
-  el.innerHTML=S.hub.map(a=>{ const on=new Set(appDays(a)).has(t);
+  const prW=(()=>{ try{ const w=(readLS("prime_30s_v1")||{}).w||{}; return Object.keys(w).some(k=>w[k]&&normDay(k)===t); }catch(e){ return false; } })();
+  const lit=a=>new Set(appDays(a)).has(t) || (a.id==="dojo"&&prW); /* PRIMEは体重を記録しただけでも点灯（継続日数には数えない） */
+  el.innerHTML=S.hub.map(a=>{ const on=lit(a);
     return `<i class="${on?"on":""}" style="--c:${a.color}" title="${a.name}${on?"：今日済み":"：まだ"}">${a.mark}</i>`; }).join("");
   el.classList.toggle("many", S.hub.length>7);
-  el.setAttribute("aria-label","今日："+S.hub.map(a=>a.name+(new Set(appDays(a)).has(t)?"済み":"まだ")).join("、"));
+  el.setAttribute("aria-label","今日："+S.hub.map(a=>a.name+(lit(a)?"済み":"まだ")).join("、"));
 }
 { const el=document.getElementById("hdrLamps"); if(el){ const go=()=>{ if(typeof setTab==="function") setTab("hub"); }; el.onclick=go; el.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(); } }; } }
 function setTab(t){
@@ -1309,7 +1322,7 @@ function hcM(){ const d=new Date(); return new Date(d.getFullYear(), d.getMonth(
 function restBar(){
   const up=Object.keys(W.freeze).filter(k=>pkeyA(k)>=pkeyA(dkey(new Date()))).sort((a,b)=>pkeyA(a)-pkeyA(b));
   return `<div class="rest ${restMode?"on":""}">
-    <div class="rest-h"><div><b>お休みの日</b><span>チケット ${W.tickets}枚 · 1日1枚</span></div><button class="${restMode?"cta":"back"}" id="restBtn">${restMode?"選び終わる":"お休みの日を選ぶ"}</button></div>
+    <div class="rest-h"><div><b>お休みの日</b><span>チケット ${W.tickets}/${TICKET_MAX}枚 · 今月あと${tkCanBuy()}枚買える</span></div><button class="${restMode?"cta":"back"}" id="restBtn">${restMode?"選び終わる":"お休みの日を選ぶ"}</button></div>
     ${restMode? `<p>上のカレンダーで日付をタップ → お休みに。もう一度タップで取り消し（チケットは戻ります）。${BACK_DAYS}日前〜${REST_AHEAD}日先まで。チケットは1枚${TICKET_PRICE}コイン。</p>`:""}
     ${up.length? `<p class="rest-up">予定：${up.map(fmtDay).join("・")}</p>`:""}
   </div>${restMode? `<div class="rest-float"><div class="rf-n"><span>のこりチケット</span><b id="rfN">${W.tickets}</b><span>枚</span><em>コイン ${walletBalance().toLocaleString()}</em></div><button class="back" id="restBuy" ${walletBalance()<TICKET_PRICE?"disabled":""}>＋1枚買う</button><button class="cta" id="restDone">完了</button></div>`:""}`;
@@ -1550,7 +1563,7 @@ function smState(){ const s=readLS(SM_KEY)||{}; s.cards=s.cards||{}; s.xp=s.xp||
 function smPick(n){
   const st=smState(), t=smYmd(new Date()), sh=a=>a.slice().sort(()=>Math.random()-.5);
   const due=sh(SMQ.filter(q=>st.cards[q.id]&&st.cards[q.id].due<=t)), fresh=sh(SMQ.filter(q=>!st.cards[q.id])), rest=sh(SMQ.filter(q=>st.cards[q.id]&&st.cards[q.id].due>t));
-  return due.concat(fresh,rest).slice(0,n);
+  return fresh.concat(due,rest).slice(0,n); /* 新規を優先（復習は小児科専門医アプリ本体で） */
 }
 function smRecord(q, pick){
   const st=smState(), t=smYmd(new Date());
