@@ -7,7 +7,7 @@
 .wal-row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .wal-shift{background:none;border:1px solid var(--line);border-radius:999px;padding:8px 14px;color:var(--fg,#fff);font-size:13px;cursor:pointer}.wal-shift.on{background:rgba(212,255,58,.14);border-color:var(--lime,#d4ff3a);color:var(--lime,#d4ff3a);font-weight:700}.wal-shift.sm{padding:6px 10px;font-size:12px}
 .wal-days{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.wal-bar{display:grid;grid-template-columns:92px 1fr 32px;align-items:center;gap:8px;font-size:12px;margin-top:8px}.wal-bar i{height:8px;background:linear-gradient(90deg,var(--hot,#ff4fa3),var(--lime,#d4ff3a));min-width:4px}.wal-bar b{text-align:right;font-family:var(--f-num)}
+.wal-bar{display:grid;grid-template-columns:92px 1fr 32px;align-items:center;gap:8px;font-size:12px;margin-top:8px}.wal-bar i{height:8px;background:linear-gradient(90deg,var(--hot,#ff4fa3),var(--lime,#d4ff3a));min-width:4px}.wal-bar b{text-align:right;font-family:var(--f-num);white-space:nowrap}
 .wal-rule{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}.wal-rule td{padding:5px 0;border-bottom:1px solid var(--line)}.wal-rule td:last-child{text-align:right;color:var(--lime,#d4ff3a)}
 .wal-h{display:grid;grid-template-columns:40px 1fr auto;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px solid var(--line)}.wal-h span:first-child{color:var(--muted)}
 .cd.fz{background:repeating-linear-gradient(-45deg,rgba(62,232,255,.18) 0 4px,transparent 4px 8px);outline:1px dashed rgba(62,232,255,.6);outline-offset:-1px}
@@ -535,13 +535,43 @@ body.k5-lock{overflow:hidden}
 .pr-sc button.on{background:var(--c);color:#140a0a;border-color:var(--c);font-weight:700}
 .k5-luck{align-self:stretch;min-height:44px;font-size:13px;color:var(--fg)}.k5-luck[disabled]{opacity:.6;color:var(--muted)}
 
+
+/* ===== 2026-11-16 使いやすさ改修 ===== */
+/* ランプ：1つずつ押せる（押すとそのアプリの今日の分へ） */
+.lamps{cursor:default}.lamps i{position:relative;width:22px;height:22px;font-size:11px;cursor:pointer}
+.brand .lamps{gap:6px}.lamps i::after{content:"";position:absolute;inset:-12px -3px}
+.lamps.many i{width:16px;height:16px;font-size:9px}.lamps.many i::after{inset:-14px -2px}
+/* 押しやすさ・読みやすさ */
+.menu-btn{width:44px;height:44px;padding:11px;margin:-5px}
+.hub-h .back,.home-cal .hub-h .back{padding:9px 11px;font-size:13px}
+.rest-h .back,.rest-h .cta{min-height:44px}
+.pr-more{padding:12px 0}
+.eyebrow{font-size:12px}.alt-c span{font-size:12px}.mini-leg{font-size:12px}.rest-h span{font-size:12px}.aw{font-size:12px}.aw.ai{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;min-height:1.5em}
+.pr-jb{flex-wrap:wrap;row-gap:0;padding:5px 4px;min-height:46px}.pr-jb small{flex-basis:100%;text-align:center;font-size:11px;line-height:1.2}
+/* ホーム：学習完了は1行の帯に */
+.hprog{display:flex;align-items:center;gap:10px;padding:9px 14px;border:1px solid var(--line);background:var(--panel);font-size:12px;color:var(--muted)}
+.hprog b{font-family:var(--f-num);font-size:15px;color:var(--fg)}.hprog b small{font-size:11px;color:var(--muted);font-weight:400}.hprog .bar{flex:1;margin:0}
+/* バックアップのお知らせ */
+.bk{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px dashed var(--line);font-size:12px;color:var(--muted)}.bk p{margin:0;flex:1;line-height:1.4}.bk .back{align-self:center;white-space:nowrap;padding:9px 12px;font-size:12px}.bk .bk-go{color:var(--lime);border-color:var(--lime)}
+/* アプリ一覧：3列 */
+.hub{grid-template-columns:repeat(3,1fr);gap:16px 8px}
+.ring{width:min(27vw,112px)}.ring .mk{font-size:27px;margin-top:-8px}.ring .st{font-size:12px;bottom:20%}
+.an{font-size:12px}.go{font-size:12px;padding:8px 14px;margin-top:6px}
+/* ロードマップ：これまでの歩み */
+.walk{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.walk div{border:1px solid var(--line);background:var(--panel);padding:10px 8px;text-align:center}
+.walk b{display:block;font-family:var(--f-num);font-size:20px;line-height:1.2;color:var(--fg)}.walk b small{font-size:11px;color:var(--muted);font-weight:400;margin-left:1px}
+.walk span{font-size:11px;color:var(--muted)}
+.walk .hi b{color:var(--lime)}
+.cbar{grid-template-columns:64px 1fr 58px}
+.ach-eta{margin:8px 0 0;font-size:12px;color:var(--muted)}
 </style>
 
 <div class="wrap">
   <header class="top">
     <button class="menu-btn" id="menuBtn" aria-label="メニューを開く"><span></span><span></span><span></span></button>
     <div class="logo" id="hdrLogo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1a0612" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v6M12 15v6M6 9h12M6 15h12"/></svg><i></i></div>
-    <div class="brand"><b>内分泌アカデミー</b><span class="lamps" id="hdrLamps" role="button" tabindex="0" aria-label="今日の各アプリ（タップでアプリ一覧）">毎日5分 · 基礎から</span></div>
+    <div class="brand"><b>内分泌アカデミー</b><span class="lamps" id="hdrLamps" aria-label="今日の各アプリ">毎日5分 · 基礎から</span></div>
     <div class="stat"><span class="who" id="hdrName"></span><div class="stat-row"><span class="lv" id="hdrLv">Lv.1</span><span class="xp" id="hdrXp">0 XP</span></div></div>
   </header>
   <main id="app"></main>
@@ -1306,11 +1336,22 @@ function hdrLamps(){ const el=document.getElementById("hdrLamps"); if(!el||!Arra
   const prW=(()=>{ try{ const w=(readLS("prime_30s_v1")||{}).w||{}; return Object.keys(w).some(k=>w[k]&&normDay(k)===t); }catch(e){ return false; } })();
   const lit=a=>new Set(appDays(a)).has(t) || (a.id==="dojo"&&prW); /* PRIMEは体重を記録しただけでも点灯（継続日数には数えない） */
   el.innerHTML=S.hub.map(a=>{ const on=lit(a);
-    return `<i class="${on?"on":""}" style="--c:${a.color}" title="${a.name}${on?"：今日済み":"：まだ"}">${a.mark}</i>`; }).join("");
+    return `<i class="${on?"on":""}" data-lamp="${a.id}" role="button" tabindex="0" style="--c:${a.color}" aria-label="${a.name}${on?"：今日済み":"：まだ"}（タップで今日の分へ）">${a.mark}</i>`; }).join("");
   el.classList.toggle("many", S.hub.length>7);
   el.setAttribute("aria-label","今日："+S.hub.map(a=>a.name+(lit(a)?"済み":"まだ")).join("、"));
 }
-{ const el=document.getElementById("hdrLamps"); if(el){ const go=()=>{ if(typeof setTab==="function") setTab("hub"); }; el.onclick=go; el.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(); } }; } }
+/* ランプを押すと、そのアプリの「今日の分」へ直行（読=今日のレッスン／巻=5問／専=専門医5問／P=体重入力／ほかはアプリを開く） */
+function lampGo(id){
+  const a=(S.hub||[]).find(x=>x.id===id); if(!a) return;
+  try{ if(typeof closeDrawer==="function") closeDrawer(); }catch(e){}
+  if(a.self){ const nx=nextLesson(); if(nx) openLesson(nx.c,nx.l); else setTab("learn"); return; }
+  if(id==="shugyo"){ setTab("home"); if(k5Count()>=K5_N){ toast("今日の5問は済んでいます"); return; } k5Open(); return; }
+  if(id==="senmon"){ quizMode="senmon"; S.qm=quizMode; save(); setTab("quiz"); return; }
+  if(id==="dojo"){ setTab("home"); const c=app.querySelector(".pr"); if(c){ const y=c.getBoundingClientRect().top+window.scrollY-90; window.scrollTo(0,Math.max(0,y)); } const w=document.getElementById("prW"); if(w){ try{ w.focus({preventScroll:true}); }catch(e){} } return; }
+  if(a.url){ location.href=a.url; return; }
+  setTab("hub");
+}
+{ const el=document.getElementById("hdrLamps"); if(el){ const go=e=>{ const t=e.target.closest&&e.target.closest("[data-lamp]"); if(t) lampGo(t.dataset.lamp); }; el.onclick=go; el.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(e); } }; } }
 function setTab(t){
   tab=t; document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   ({home,learn,quiz,road,hub:hubScreen})[t](); hdr(); window.scrollTo(0,0);
@@ -1346,12 +1387,10 @@ function home(){
         .filter((o,i,a)=>coOf(o.c).id===S.course || a.findIndex(z=>coOf(z.c)===coOf(o.c))===i)
         .sort((a,b)=>(coOf(a.c).id===S.course)-(coOf(b.c).id===S.course));
       return others.length? `<div class="alt"><div class="eyebrow">気分を変えて、別の章から</div><div class="alt-row">${others.map(o=>`<button class="alt-c" data-l="${o.l.id}"><span>${COURSES.find(x=>x.chapters.includes(o.c)).id!==S.course? COURSES.find(x=>x.chapters.includes(o.c)).short+" · ":""}${o.c.n} ${o.c.t}</span><b>${o.l.t}</b></button>`).join("")}</div></div>`:""; })()}
+    ${bkCard()}
     ${walletCard()}
     ${k5Tiles()}
-    <div class="grid2 hstat">
-      <div class="tile"><div class="k">学習完了</div><div class="v">${done}<small>/${tp}</small></div><div class="bar"><i style="width:${done/tp*100}%"></i></div></div>
-      <div class="tile"><div class="k sr-k">${r.name}<span>${nr? "次まで "+(nr.xp-S.xp)+" XP":"最高ランク"}</span></div><div class="v">Lv.${r.lv}</div><div class="bar"><i style="width:${prog}%"></i></div></div>
-    </div>
+    <div class="hprog"><span>学習完了</span><b>${done}<small>/${tp}</small></b><div class="bar"><i style="width:${done/tp*100}%"></i></div></div>
     ${primeCard()}
     <div class="home-cal">
       <div class="hub-h"><div class="eyebrow">CALENDAR · ${hcM().getMonth()+1}月</div>${restMode? `<div class="rest-nav"><button class="back" id="hmP" ${hcOff<=0?"disabled":""}>‹</button><button class="back" id="hmN" ${hcOff>=1?"disabled":""}>›</button></div>`:""}<button class="back" id="hcal">くわしく ›</button></div>
@@ -1363,7 +1402,7 @@ function home(){
   const g=document.getElementById("go"); if(g) g.onclick=()=>openLesson(nx.c, nx.l);
   app.querySelectorAll(".alt-c").forEach(b=>b.onclick=()=>{ const c=ALL_CH.find(x=>x.lessons.some(l=>l.id===b.dataset.l)); openLesson(c, c.lessons.find(l=>l.id===b.dataset.l)); });
   const hc=document.getElementById("hcal"); if(hc) hc.onclick=()=>{ calOff=0; calendar(); window.scrollTo(0,0); };
-  bindWallet(home);
+  bindWallet(home); bindBk();
   const k5b=document.getElementById("k5go"); if(k5b) k5b.onclick=k5Open;
   bindPrime();
   const rb=document.getElementById("restBtn"); if(rb) rb.onclick=()=>{ restMode=!restMode; hcOff=0; const y=window.scrollY; home(); window.scrollTo(0,y); };
@@ -1393,7 +1432,7 @@ function hubRing(a){
       <span class="st">${appStreak(a)}<i>日</i></span>
     </button>
     <div class="an">${a.name}</div>
-    <div class="aw">今週 ${w}/7${a.info?" · "+a.info:""}</div>
+    <div class="aw">今週 ${w}/7</div><div class="aw ai">${a.info||"&nbsp;"}</div>
     ${a.self? `<span class="go here">ここ</span>` : (a.url? `<a class="go" href="${a.url}">開く →</a>` : `<span class="go off">URL未設定</span>`)}
   </div>`;
 }
@@ -1529,9 +1568,9 @@ function terms(){
 
 /* クイズ／ミニゲーム切り替え（ミニゲーム本体はミニ置き場の tools/ポチ道場.html） */
 const GAME_URL="/Index/tools/"+encodeURIComponent("ポチ道場")+".html";
-let quizMode="quiz";
+let quizMode=(["quiz","game","senmon","fuel"].includes(S.qm)? S.qm : "quiz"); /* 前回開いていたタブを覚える */
 function quizSwitch(){ return `<div class="tchips" role="tablist"><button class="tchip ${quizMode==="quiz"?"on":""}" data-qm="quiz">クイズ</button><button class="tchip ${quizMode==="game"?"on":""}" data-qm="game">ミニゲーム</button><button class="tchip ${quizMode==="senmon"?"on":""}" data-qm="senmon">小児科専門医</button><button class="tchip ${quizMode==="fuel"?"on":""}" data-qm="fuel">栄養</button></div>`; }
-function bindQuizSwitch(){ app.querySelectorAll("[data-qm]").forEach(b=>b.onclick=()=>{ quizMode=b.dataset.qm; quiz(); }); }
+function bindQuizSwitch(){ app.querySelectorAll("[data-qm]").forEach(b=>b.onclick=()=>{ quizMode=b.dataset.qm; S.qm=quizMode; save(); quiz(); }); }
 function gameScreen(){
   const g=readLS("pochiDojoLog2")||{}, t=dkey(new Date());
   const left=g.date===t? Math.max(0,3-(g.plays||0)) : 3;
@@ -1715,8 +1754,29 @@ function quiz(){
   show();
 }
 
+/* 取り組んだ日（お休みチケットの日も連続に数える）のうち、いちばん長く続いた日数 */
+function bestStreak(){ const set=unionDays(); try{ for(const k in W.freeze) set.add(k); }catch(e){}
+  const ts=[...set].map(k=>{ const a=String(k).split("-").map(Number); return new Date(a[0],a[1]-1,a[2]).getTime(); }).filter(x=>!isNaN(x)).sort((a,b)=>a-b);
+  let best=0, run=0, prev=null; ts.forEach(t=>{ run=(prev!=null && Math.round((t-prev)/864e5)===1)? run+1 : 1; if(run>best) best=run; prev=t; }); return best; }
+function walkBlock(){
+  const nd=unionDays().size, cur=unionStreak(), best=Math.max(bestStreak(),cur), read=Object.keys(S.done).length;
+  const sh=readLS("shugyo_endo_v2")||{}, sm=readLS("senmoni_scroll_v1")||{}; let smN=0; for(const k in (sm.log||{})) smN+=+sm.log[k]||0;
+  const solved=(sh.ans||0)+smN, mins=S.mins||0, time=mins>=60? (Math.round(mins/6)/10)+"<small>時間</small>" : mins+"<small>分</small>";
+  const cs=COURSES.map(c=>{ const ls=c.chapters.flatMap(ch=>ch.lessons); return [c.short, ls.filter(l=>S.done[l.id]).length, ls.length]; }).filter(x=>x[2]);
+  return `<h2 class="ms-h">これまでの歩み</h2>
+    <div class="walk">
+      <div class="hi"><b>${cur}<small>日</small></b><span>いまの連続</span></div>
+      <div><b>${best}<small>日</small></b><span>最長の連続</span></div>
+      <div><b>${nd}<small>日</small></b><span>取り組んだ日</span></div>
+      <div><b>${read}<small>話</small></b><span>読んだ話</span></div>
+      <div><b>${solved.toLocaleString()}<small>問</small></b><span>解いた問題</span></div>
+      <div><b>${time}</b><span>読んだ時間</span></div>
+    </div>
+    <div class="tile"><div class="k">分野ごとの読了</div>${cs.map(([n,d,t])=>`<div class="wal-bar cbar"><span>${n}</span><i style="width:${d/t*100}%"></i><b>${d}/${t}</b></div>`).join("")}</div>`;
+}
 function road(){
   const r=rank(), nr=nextRank(), max=RANKS[RANKS.length-1].xp;
+  const nxL=nextLesson(), eta=(nr&&nxL)? Math.ceil((nr.xp-S.xp)/lvXp(nxL.l.lv)) : 0;
   const pos=x=>Math.min(100, x/max*100);
   app.innerHTML = `<section class="screen">
     <div class="ach">
@@ -1726,7 +1786,9 @@ function road(){
       <div class="ach-row"><b>${S.xp.toLocaleString()} XP</b><span>${nr? "Lv."+nr.lv+"まであと "+(nr.xp-S.xp).toLocaleString()+" XP":"最高レベル到達"}</span></div>
       <div class="track"><i style="width:${pos(S.xp)}%"></i>${RANKS.map(x=>`<em class="${S.xp>=x.xp?"got":""}" style="left:${pos(x.xp)}%"></em>`).join("")}</div>
       <div class="track-l">${RANKS.map(x=>`<span style="left:${pos(x.xp)}%">L${x.lv}</span>`).join("")}</div>
+      ${eta? `<p class="ach-eta">1日1話なら、あと約${eta}日でLv.${nr.lv}</p>`:""}
     </div>
+    ${walkBlock()}
     <h2 class="ms-h">学習マイルストーン</h2>
     ${RANKS.slice(1).map(x=>{ const got=S.xp>=x.xp, next=nr&&nr.lv===x.lv;
       return `<div class="ms ${next?"next":""} ${got?"got":""}">
@@ -1838,6 +1900,7 @@ function settings(){
       <button class="cta" id="imb" style="margin-top:8px">読み込む</button><div id="imr" style="font-size:12px;margin-top:8px"></div>
       <p style="margin:14px 0 6px;font-size:13px">コードが長くて貼り付けにくいときは、ファイルで移せます：</p>
       <button class="back" id="exf">ファイルに保存</button> <button class="back" id="imf">ファイルから読み込む</button>
+      <p style="margin:10px 0 0;font-size:12px;color:var(--muted)">${S.bk? "最後のバックアップ："+new Date(S.bk).getFullYear()+"/"+(new Date(S.bk).getMonth()+1)+"/"+new Date(S.bk).getDate() : "まだバックアップしていません"}（${BK_DAYS}日たつとホームでお知らせします）</p>
       <input type="file" id="imfi" accept=".txt,text/plain" style="display:none"></div>
     <div class="tile"><div class="k">記録をリセット</div><p style="margin:4px 0 10px;font-size:13px">XP・読了・学習時間をすべて消します。元に戻せません。</p>
       <button class="danger" id="rs">リセットする</button><div id="rsc"></div></div></section>`;
@@ -1851,11 +1914,7 @@ function settings(){
   document.getElementById("imp").onclick=()=>{
     if(!(navigator.clipboard&&navigator.clipboard.readText)){ toast("下の枠を長押しして「ペースト」してください"); return; }
     navigator.clipboard.readText().then(t=>{ document.getElementById("imi").value=t; runImport(t); },()=>toast("下の枠を長押しして「ペースト」してください")); };
-  document.getElementById("exf").onclick=()=>{ const code=xferExport(); const d=new Date();
-    const name="academy-backup-"+d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+".txt";
-    const file=new File([code],name,{type:"text/plain"});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){ navigator.share({files:[file]}).catch(()=>{}); return; }
-    const a=document.createElement("a"); a.href=URL.createObjectURL(file); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},1000); };
+  document.getElementById("exf").onclick=xferSaveFile;
   document.getElementById("imf").onclick=()=>document.getElementById("imfi").click();
   document.getElementById("imfi").onchange=(e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return;
     const rd=new FileReader(); rd.onload=()=>runImport(String(rd.result)); rd.readAsText(f); e.target.value=""; };
@@ -1900,6 +1959,21 @@ function xferImport(code){
     else { let v=o[k]; try{ const cur=localStorage.getItem(k); if(cur!==null) v=JSON.stringify(xferMerge(JSON.parse(cur),JSON.parse(o[k]))); }catch(e){} localStorage.setItem(k,v); }
     n++; names.push(XFER_NAMES[k]||k); }
   return {ok:true,n,names}; }
+
+/* 月1バックアップ：最後の「ファイルに保存」から30日たったらホームに小さく出す */
+const BK_DAYS=30;
+function xferSaveFile(){ const code=xferExport(); const d=new Date();
+  const name="academy-backup-"+d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+".txt";
+  const file=new File([code],name,{type:"text/plain"});
+  const mark=()=>{ S.bk=Date.now(); delete S.bkSnooze; save(); toast("バックアップを保存しました"); if(tab==="home"&&document.querySelector(".bk")){ const y=window.scrollY; home(); window.scrollTo(0,y); } };
+  if(navigator.canShare&&navigator.canShare({files:[file]})){ navigator.share({files:[file]}).then(mark).catch(()=>{}); return; }
+  const a=document.createElement("a"); a.href=URL.createObjectURL(file); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},1000); mark(); }
+function bkCard(){ const now=Date.now(); if(S.bkSnooze&&now<S.bkSnooze) return "";
+  if(S.bk){ if(now-S.bk<BK_DAYS*864e5) return ""; } else if(unionDays().size<7) return "";
+  const msg=S.bk? "最後のバックアップから"+Math.floor((now-S.bk)/864e5)+"日たちました" : "記録のバックアップがまだありません";
+  return `<div class="bk"><p>${msg}</p><button class="back bk-go" id="bkGo">保存する</button><button class="back" id="bkLater">あとで</button></div>`; }
+function bindBk(){ const g=document.getElementById("bkGo"); if(g) g.onclick=xferSaveFile;
+  const l=document.getElementById("bkLater"); if(l) l.onclick=()=>{ S.bkSnooze=Date.now()+7*864e5; save(); const y=window.scrollY; home(); window.scrollTo(0,y); }; }
 
 function toast(m){ const t=document.createElement("div"); t.className="toast"; t.textContent=m; document.body.appendChild(t); setTimeout(()=>t.remove(),1800); }
 
