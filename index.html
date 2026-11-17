@@ -907,13 +907,14 @@ function buyTicket(){
   if(walletBalance()<TICKET_PRICE){ toast("コインがあと "+(TICKET_PRICE-walletBalance())+" 足りません"); return false; }
   W.spent+=TICKET_PRICE; W.tickets++; W.buys[tkMonthKey()]=tkBoughtMonth()+1; whist("お休みチケットを購入",-TICKET_PRICE); wsave(); return true;
 }
-/* 連続が途切れている日（今日より前・7日以内・その前に続きがある日）を新しい順に */
+/* 連続が途切れている日（今日より前・7日以内・その前に続きがある日）を新しい順に。
+   2026-11-18修正：途切れた翌日に何かやると穴が見えなくなっていたので、やった日を飛ばしていちばん新しい穴を探す */
 function gapDays(){
-  const U=unionDays(), F=W.freeze; const out=[]; const d=new Date(); d.setDate(d.getDate()-1);
-  for(let i=0;i<BACK_DAYS;i++){ const k=dkey(d); if(U.has(k)||F[k]) break; out.push(k); d.setDate(d.getDate()-1); }
+  const U=unionDays(), F=W.freeze, has=k=>U.has(k)||F[k]; const d=new Date(); d.setDate(d.getDate()-1);
+  let i=0; while(i<BACK_DAYS && has(dkey(d))){ d.setDate(d.getDate()-1); i++; }
+  const out=[]; while(i<BACK_DAYS && !has(dkey(d))){ out.push(dkey(d)); d.setDate(d.getDate()-1); i++; }
   /* その手前にやった日がなければ、守る連続がないので出さない */
-  const before=new Date(); before.setDate(before.getDate()-1-out.length);
-  return (out.length && (U.has(dkey(before))||F[dkey(before)]))? out : [];
+  return (out.length && has(dkey(d)))? out : [];
 }
 function useTicket(k){
   if(W.freeze[k]) return true;
@@ -950,7 +951,7 @@ function walletCard(){
       <button class="wal-shift ${W.shift[tk]?"on":""}" id="wShift">${W.shift[tk]?"✓ バイト":"バイト ＋"+SHIFT_COIN}</button>
       <button class="back wal-more" id="wMore" aria-label="コインのくわしく">›</button>
     </div>
-    ${gaps.length? `<div class="wal-gap"><p>${gaps.map(fmtDay).reverse().join("・")} がお休みで、連続が途切れそうです。</p>
+    ${gaps.length? `<div class="wal-gap"><p>${gaps.map(fmtDay).reverse().join("・")} がお休みで、連続が途切れています。</p>
       ${canFix? `<button class="cta" id="wFix">${need? "チケットを"+need+"枚買って守る（"+need*TICKET_PRICE+"コイン）" : "チケット"+gaps.length+"枚で守る"}</button>`:`<p class="wal-s">${need>tkCanBuy()? "チケットが足りません（持てるのは"+TICKET_MAX+"枚・今月あと"+tkCanBuy()+"枚まで）" : "コインがたまれば、"+BACK_DAYS+"日以内ならあとからでも守れます"}</p>`}</div>`:""}
   </div>`;
 }
