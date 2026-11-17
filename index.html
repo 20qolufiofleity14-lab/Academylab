@@ -590,6 +590,43 @@ body.k5-lock{overflow:hidden}
 .rg-tip{list-style:none;margin:0;padding:10px 12px;display:grid;gap:6px;border:1px solid var(--line);background:color-mix(in srgb,var(--line) 25%,transparent)}
 .rg-tip li{font-size:13px;line-height:1.5;color:var(--fg)}
 .rg-note{margin:0;font-size:11px;color:var(--dim)}
+
+/* 英語の巻物 */
+.eg{margin:2px 0}
+.eg-roll{all:unset;box-sizing:border-box;position:relative;display:flex;align-items:center;justify-content:center;width:calc(100% - 20px);margin:0 10px;height:54px;border-radius:27px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  background:linear-gradient(180deg,#f3e6c4 0%,#e3cc95 30%,#c9a86a 62%,#9c7a43 100%);box-shadow:inset 0 3px 3px rgba(255,255,255,.45),inset 0 -4px 6px rgba(70,40,10,.35),0 6px 16px rgba(0,0,0,.45);transition:transform .15s}
+.eg-roll:active{transform:scale(.98)}
+.eg-roll::before{content:"";position:absolute;left:18px;right:18px;top:50%;height:1px;background:rgba(90,58,28,.25)}
+.eg-knob{position:absolute;top:50%;width:16px;height:64px;margin-top:-32px;border-radius:6px;background:linear-gradient(90deg,#3d2410,#7a4b22 45%,#3d2410);box-shadow:0 3px 8px rgba(0,0,0,.5)}
+.eg-knob.l{left:-10px}.eg-knob.r{right:-10px}
+.eg-band{position:relative;display:flex;align-items:baseline;gap:8px;padding:4px 14px;background:#7c1f2a;color:#fbe9d0;clip-path:polygon(0 0,100% 0,96% 50%,100% 100%,0 100%,4% 50%);box-shadow:0 2px 4px rgba(0,0,0,.3);max-width:calc(100% - 90px)}
+.eg-band em{font-style:normal;font-size:10px;opacity:.8;white-space:nowrap}.eg-band b{font-family:var(--f-display);font-size:14px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eg-seal{position:absolute;right:26px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;color:#f6e3c0;background:radial-gradient(circle at 35% 35%,#8a8f99,#4b505a);box-shadow:0 2px 4px rgba(0,0,0,.4)}
+.eg-roll.done .eg-seal{background:radial-gradient(circle at 35% 35%,#7fa6ff,#3a5bd0)}
+.eg-roll.gold .eg-seal{background:radial-gradient(circle at 35% 35%,#ffe28a,#c99a1e);color:#3a2408}
+.eg-sub{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);margin:8px 14px 0}
+.eg.open{padding:0 10px}
+.eg-rod{position:relative;height:22px;border-radius:11px;background:linear-gradient(180deg,#f0dfb4,#c9a86a 60%,#9c7a43);box-shadow:inset 0 2px 2px rgba(255,255,255,.4),0 4px 10px rgba(0,0,0,.45);z-index:2}
+.eg-rod.top{cursor:pointer}.eg-rod .eg-knob{height:32px;margin-top:-16px;width:14px}
+.eg-paper{position:relative;margin:-6px 8px;padding:20px 16px 18px;color:#3a2410;transform-origin:top;animation:egUnroll .55s cubic-bezier(.2,.8,.2,1);
+  background:radial-gradient(ellipse at 20% 10%,rgba(255,255,255,.35),transparent 60%),linear-gradient(180deg,#f6ebcf,#ecd9aa 70%,#e2c98f);box-shadow:inset 0 0 30px rgba(120,80,30,.25)}
+@keyframes egUnroll{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
+@media (prefers-reduced-motion: reduce){.eg-paper{animation:none}}
+.eg-h{text-align:center;padding-bottom:12px;border-bottom:1px dashed rgba(90,58,28,.35)}
+.eg-h em{display:block;font-style:normal;font-size:11px;color:#7c1f2a;letter-spacing:.1em}
+.eg-h b{display:block;font-family:var(--f-display);font-size:22px;font-weight:400;margin:2px 0}
+.eg-h small{display:block;font-size:11px;color:#6b4a26}
+.eg-go{display:inline-block;margin-top:10px;padding:8px 14px;background:#7c1f2a;color:#fbe9d0;font-size:13px;font-weight:700;text-decoration:none;border-radius:4px}
+.eg-lt{margin:12px 0 6px;font-size:12px;font-weight:700}.eg-lt small{font-weight:400;color:#6b4a26;margin-left:4px}
+.eg-list{display:grid;gap:6px}
+.eg-it{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid rgba(90,58,28,.3);background:rgba(255,255,255,.25);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.eg-it i{flex:none;width:22px;height:22px;border:2px solid #6b4a26;border-radius:4px;display:grid;place-items:center;font-style:normal;font-weight:700;color:#fff}
+.eg-it.on i{background:#3a5bd0;border-color:#3a5bd0}
+.eg-it span{display:flex;flex-direction:column;min-width:0}.eg-it b{font-size:14px}.eg-it small{font-size:11px;color:#6b4a26}
+.eg-it.pick{border:2px solid #7c1f2a;background:rgba(124,31,42,.08)}
+.eg-it.pick.on i{background:#c99a1e;border-color:#c99a1e}
+.eg-it.base{border-style:dashed}
+.eg-foot{margin-top:12px;text-align:center;font-size:12px;color:#5a3a1c}
 </style>
 
 <div class="wrap">
@@ -775,7 +812,8 @@ const HUB_DEFAULT = [
   {id:"owarai",  name:"お笑い会話",      mark:"笑", color:"#ffb547", url:"https://20qolufiofleity14-lab.github.io/owarasss/", days:[]},
   {id:"dojo",    name:"PRIME",           mark:"P",  color:"#e8322e", url:"https://20qolufiofleity14-lab.github.io/PRIME/", days:[]},
   {id:"mini",    name:"ミニ置き場",      mark:"ミ", color:"#9b8cff", url:"https://20qolufiofleity14-lab.github.io/Index/", days:[]},
-  {id:"news",    name:"週刊ENDO通信",    mark:"通", color:"#2ee59d", url:"https://20qolufiofleity14-lab.github.io/end-weekly/", days:[]}
+  {id:"news",    name:"週刊ENDO通信",    mark:"通", color:"#2ee59d", url:"https://20qolufiofleity14-lab.github.io/end-weekly/", days:[]},
+  {id:"eigo",    name:"英語",            mark:"英", color:"#5b8cff", url:"https://offer.eigonod.com/members/oxwdTOPhBJOF/home", days:[]}
 ];
 try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -788,7 +826,7 @@ if(!S.hubAdded) S.hubAdded={};
 /* PRIMEは独立リポジトリへ移動：古いリンク（dojo/）を新しいURLに置き換える */
 { const pr=S.hub.find(x=>x.id==="dojo"); if(pr && (pr.url==="dojo/"||/\/dojo\/?$/.test(pr.url||""))){ pr.url="https://20qolufiofleity14-lab.github.io/PRIME/"; pr.name="PRIME"; pr.mark="P"; pr.color="#e8322e"; } }
 { const mi=S.hub.find(x=>x.id==="mini"); if(mi && /\/index\/?$/.test(mi.url||"")) mi.url="https://20qolufiofleity14-lab.github.io/Index/"; }
-HUB_DEFAULT.forEach(d=>{ if((d.id==="dojo"||d.id==="mini"||d.id==="news") && !S.hubAdded[d.id] && !S.hub.find(x=>x.id===d.id)){ S.hub.push(JSON.parse(JSON.stringify(d))); } if(d.id==="dojo"||d.id==="mini"||d.id==="news") S.hubAdded[d.id]=1; });
+HUB_DEFAULT.forEach(d=>{ if((d.id==="dojo"||d.id==="mini"||d.id==="news"||d.id==="eigo") && !S.hubAdded[d.id] && !S.hub.find(x=>x.id===d.id)){ S.hub.push(JSON.parse(JSON.stringify(d))); } if(d.id==="dojo"||d.id==="mini"||d.id==="news"||d.id==="eigo") S.hubAdded[d.id]=1; });
 save();
 /* 同じ github.io に置いた各アプリの記録を読んで、やった日を自動で付ける */
 function normDay(k){ const m=String(k).match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/); return m? (+m[1])+"-"+(+m[2])+"-"+(+m[3]) : null; }
@@ -886,7 +924,7 @@ function wsave(){ W.bal=walletBalance(); W.updated=Date.now(); try{ localStorage
 const EARN_RULES=[
   ["アカデミーを開く","1"],["アカデミーで1話読む","3（2話目から +2、1日 +6まで）"],
   ["修行巻物を解く","3 ＋10問ごとに +1（+3まで）"],["小児科専門医","3"],["お笑い会話","2"],
-  ["PRIME 筋トレ","ミニ 2／ふつう 4／がっつり 6"],["PRIME 体重・3行日記","各 1"],["PRIME 栄養クイズ","5問で 1"],["ミニ置き場","1"],["週刊ENDO通信","記事1本ごとに 1（1日 5まで）"],["ミニゲーム","クリア 2（1日3回まで）"],["バイト（1回）",String(SHIFT_COIN)]
+  ["PRIME 筋トレ","ミニ 2／ふつう 4／がっつり 6"],["PRIME 体重・3行日記","各 1"],["PRIME 栄養クイズ","5問で 1"],["ミニ置き場","1"],["週刊ENDO通信","記事1本ごとに 1（1日 5まで）"],["英語の巻物","1つで 2／Word Legend＋Dさんで 3"],["ミニゲーム","クリア 2（1日3回まで）"],["バイト（1回）",String(SHIFT_COIN)]
 ];
 function earnByDay(){
   const m={}; const add=(d,src,c)=>{ d=normDay(d); if(!d||!(c>0)) return; (m[d]=m[d]||{})[src]=((m[d]||{})[src]||0)+c; };
@@ -909,6 +947,7 @@ function earnByDay(){
     for(const d in per) add(d,"ENDO通信",Math.min(5,per[d])); }
   const mi=readLS("mini.log")||{}; for(const k in mi) if(mi[k]&&mi[k].length) add(k,"ミニ置き場",1);
   const pg=readLS("pochiDojoLog2")||{}; for(const k in (pg.coinDays||{})) add(k,"ミニゲーム",2*Math.min(3,+pg.coinDays[k]||0));
+  { const lg=(S.eigo&&S.eigo.log)||{}; for(const k in lg){ const v=lg[k]||[]; if(v.length) add(k,"英語",(v.includes("wl")&&v.some(x=>x!=="wl"))?3:2); } }
   for(const k in W.shift) if(W.shift[k]) add(k,"バイト",SHIFT_COIN*(+W.shift[k]||1));
   return m;
 }
@@ -1217,6 +1256,73 @@ function bindPrime(){
   const jn=document.getElementById("prJn"); if(jn) jn.onclick=prNight;
   const po=document.getElementById("p5Open"); if(po) po.onclick=prPillars;
 }
+/* ---------- 英語ここまで */
+/* ---------- 英語の巻物：今日のお題（Dさんのアプリから1つ）＋やったものチェック ---------- */
+const EG_URL="https://offer.eigonod.com/members/oxwdTOPhBJOF/home";
+const EG_ITEMS=[
+  {id:"wl",n:"Word Legend",s:"英単語・ベース",base:true},
+  {id:"mt",n:"洋画トレーニング",s:"Lv1から1Partずつ"},
+  {id:"vb",n:"Vocabank Pro",s:"話せる単語暗記"},
+  {id:"nr",n:"Native Rhythm Master",s:"リズム"},
+  {id:"ch",n:"Chunk Master＋",s:"チャンク"},
+  {id:"cm",n:"Camera Master＋",s:"カメラ"},
+  {id:"bt",n:"Beat Master＋",s:"ビート"}
+];
+let egOpen=false;
+function egS(){ if(!S.eigo||typeof S.eigo!=="object") S.eigo={}; S.eigo.log=S.eigo.log||{}; S.eigo.pick=S.eigo.pick||{}; return S.eigo; }
+/* お題：Dさんの6つから、直近14日でやった回数が少ないものを優先（同点は日付で決まる乱数＝その日は固定） */
+function egPick(){ const E=egS(), k=dkey(new Date()); if(E.pick[k]) return E.pick[k];
+  const cnt={}; const d=new Date(); for(let i=1;i<=14;i++){ d.setDate(d.getDate()-1); (E.log[dkey(d)]||[]).forEach(x=>cnt[x]=(cnt[x]||0)+1); }
+  const y=new Date(); y.setDate(y.getDate()-1); const prev=E.pick[dkey(y)];
+  const pool=EG_ITEMS.filter(x=>!x.base);
+  let seed=0; for(const c of k) seed=(seed*31+c.charCodeAt(0))%100003;
+  const sc=x=>(cnt[x.id]||0)*10+(x.id===prev?25:0)+((seed*(pool.indexOf(x)+7))%10);
+  const pk=[...pool].sort((a,b)=>sc(a)-sc(b))[0].id; E.pick[k]=pk;
+  for(const kk of Object.keys(E.pick)){ const p=kk.split("-").map(Number); if(Date.now()-new Date(p[0],p[1]-1,p[2])>60*864e5) delete E.pick[kk]; }
+  save(); return pk; }
+function egToday(){ return egS().log[dkey(new Date())]||[]; }
+function egSync(){ const a=S.hub.find(x=>x.id==="eigo"); if(!a) return; const k=dkey(new Date()); a.days=(a.days||[]).filter(x=>x!==k); if(egToday().length) a.days.push(k); }
+function eigoCard(){
+  const a=S.hub.find(x=>x.id==="eigo"); if(!a) return "";
+  const pk=EG_ITEMS.find(x=>x.id===egPick()), t=egToday(), n=t.length, gotPick=t.includes(pk.id), both=t.includes("wl")&&t.some(x=>x!=="wl");
+  const st=appStreak(a);
+  if(!egOpen) return `<div class="eg">
+    <button class="eg-roll ${n?"done":""} ${gotPick?"gold":""}" id="egRoll" aria-label="英語の巻物をひらく。今日のお題は${pk.n}">
+      <span class="eg-knob l"></span><span class="eg-knob r"></span>
+      <span class="eg-band"><em>今日の英語</em><b>${pk.n}</b></span>
+      <span class="eg-seal">${gotPick?"✓":n?"済":"英"}</span>
+    </button>
+    <div class="eg-sub"><span>${n? (both?"ベース＋Dさん 両方できた":"今日はできた · あと1つで両方"):"タップでひらく · どれか1つでOK"}</span><span>英語 ${st}日連続</span></div>
+  </div>`;
+  return `<div class="eg open">
+    <div class="eg-rod top" id="egClose" role="button" tabindex="0" aria-label="巻物を閉じる"><span class="eg-knob l"></span><span class="eg-knob r"></span></div>
+    <div class="eg-paper">
+      <div class="eg-h"><em>今日のお題</em><b>${pk.n}</b><small>${pk.s} · 最近やってないものから選びました</small>
+        <a class="eg-go" href="${EG_URL}">D's Premium Library をひらく →</a></div>
+      <div class="eg-lt">やったものにチェック <small>どれか1つで「英」が点灯</small></div>
+      <div class="eg-list">${EG_ITEMS.map(x=>`<button class="eg-it ${t.includes(x.id)?"on":""} ${x.id===pk.id?"pick":""} ${x.base?"base":""}" data-eg="${x.id}"><i>${t.includes(x.id)?"✓":""}</i><span><b>${x.n}</b><small>${x.base?"ベース · 1日ちょっとでOK":x.s}${x.id===pk.id?" · 今日のお題":""}</small></span></button>`).join("")}</div>
+      <div class="eg-foot">${n? (both?"ベース＋Dさん、両方できた。最高の日。":gotPick?"お題クリア。これで今日は十分。":"今日の分は記録しました。"):"5分だけでも、やったら付けよう。"} · 英語 ${st}日連続</div>
+    </div>
+    <div class="eg-rod bot"><span class="eg-knob l"></span><span class="eg-knob r"></span></div>
+  </div>`;
+}
+function bindEigo(){
+  const rr=()=>{ const y=window.scrollY; home(); window.scrollTo(0,y); };
+  const r=document.getElementById("egRoll"); if(r) r.onclick=()=>{ egOpen=true; rr(); };
+  const c=document.getElementById("egClose"); if(c){ c.onclick=()=>{ egOpen=false; rr(); }; c.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); egOpen=false; rr(); } }; }
+  app.querySelectorAll("[data-eg]").forEach(b=>b.onclick=()=>{ const E=egS(), k=dkey(new Date()), id=b.dataset.eg; const was=(E.log[k]||[]).length;
+    E.log[k]=E.log[k]||[]; if(E.log[k].includes(id)) E.log[k]=E.log[k].filter(x=>x!==id); else E.log[k].push(id);
+    if(!E.log[k].length) delete E.log[k];
+    egSync(); save(); wsave(); hdrLamps();
+    if(!was && (E.log[k]||[]).length) toast("英語 今日やった！"); rr(); });
+}
+/* ロードマップ：英語の内訳（直近30日） */
+function egBreak(){ const a=S.hub.find(x=>x.id==="eigo"); if(!a) return ""; const lg=egS().log, cnt={}; let days=0;
+  const d=new Date(); for(let i=0;i<30;i++){ const v=lg[dkey(d)]||[]; if(v.length) days++; v.forEach(x=>cnt[x]=(cnt[x]||0)+1); d.setDate(d.getDate()-1); }
+  const mx=Math.max(1,...EG_ITEMS.map(x=>cnt[x.id]||0));
+  return `<div class="tile eg-br"><div class="k" style="color:${a.color}">英語の内訳 · 直近30日（${days}日）</div>
+    ${EG_ITEMS.map(x=>`<div class="wal-bar"><span>${x.n.replace(/ Master＋?$/,"").replace("トレーニング","トレ")}</span><i style="width:${(cnt[x.id]||0)/mx*100}%;background:${x.base?a.color:"linear-gradient(90deg,"+a.color+",#c9a86a)"}"></i><b>${cnt[x.id]||0}</b></div>`).join("")}</div>`; }
+
 /* ---------- 朝・夜のジャーナル：PRIMEの D.am（朝の方向）／D.good・D.nt・D.thanks（夜）に直接書く ---------- */
 const prObj=(d,f)=>{ if(!d[f]||typeof d[f]!=="object") d[f]={}; return d[f]; };
 function prMorning(){
@@ -1382,6 +1488,7 @@ function lampGo(id){
   if(id==="shugyo"){ setTab("home"); if(k5Count()>=K5_N){ toast("今日の5問は済んでいます"); return; } k5Open(); return; }
   if(id==="senmon"){ quizMode="senmon"; S.qm=quizMode; save(); setTab("quiz"); return; }
   if(id==="dojo"){ setTab("home"); const c=app.querySelector(".pr"); if(c){ const y=c.getBoundingClientRect().top+window.scrollY-90; window.scrollTo(0,Math.max(0,y)); } const w=document.getElementById("prW"); if(w){ try{ w.focus({preventScroll:true}); }catch(e){} } return; }
+  if(id==="eigo"){ setTab("home"); egOpen=true; home(); const c=app.querySelector(".eg"); if(c){ const y=c.getBoundingClientRect().top+window.scrollY-90; window.scrollTo(0,Math.max(0,y)); } return; }
   if(a.url){ location.href=a.url; return; }
   setTab("hub");
 }
@@ -1426,6 +1533,7 @@ function home(){
     ${k5Tiles()}
     <div class="hprog"><span>学習完了</span><b>${done}<small>/${tp}</small></b><div class="bar"><i style="width:${done/tp*100}%"></i></div></div>
     ${primeCard()}
+    ${eigoCard()}
     <div class="home-cal">
       <div class="hub-h"><div class="eyebrow">CALENDAR · ${hcM().getMonth()+1}月</div>${restMode? `<div class="rest-nav"><button class="back" id="hmP" ${hcOff<=0?"disabled":""}>‹</button><button class="back" id="hmN" ${hcOff>=1?"disabled":""}>›</button></div>`:""}<button class="back" id="hcal">くわしく ›</button></div>
       ${calGrid(hcM().getFullYear(),hcM().getMonth(),hcOff===0)}
@@ -1438,7 +1546,7 @@ function home(){
   const hc=document.getElementById("hcal"); if(hc) hc.onclick=()=>{ calOff=0; calendar(); window.scrollTo(0,0); };
   bindWallet(home); bindBk();
   const k5b=document.getElementById("k5go"); if(k5b) k5b.onclick=k5Open;
-  bindPrime();
+  bindPrime(); bindEigo();
   const rb=document.getElementById("restBtn"); if(rb) rb.onclick=()=>{ restMode=!restMode; hcOff=0; const y=window.scrollY; home(); window.scrollTo(0,y); };
   const hp=document.getElementById("hmP"), hn=document.getElementById("hmN"); const rr=()=>{ const y=window.scrollY; home(); window.scrollTo(0,y); };
   if(hp) hp.onclick=()=>{ if(hcOff>0){ hcOff--; rr(); } }; if(hn) hn.onclick=()=>{ if(hcOff<1){ hcOff++; rr(); } };
@@ -1817,7 +1925,7 @@ function walkBlock(){
     <div class="tile"><div class="k">分野ごとの読了</div>${cs.map(([n,d,t])=>`<div class="wal-bar cbar"><span>${n}</span><i style="width:${d/t*100}%"></i><b>${d}/${t}</b></div>`).join("")}</div>`;
 }
 /* アプリごとの直近30日：同心円バー（内側から各アプリ、1周＝30日） */
-const RING_TIP={academy:"今日のレッスンを1話だけ読む",shugyo:"ホームの「今日の巻物5問」から",senmon:"クイズ/遊ぶの専門医タブで5問",owarai:"1会話だけ開いてみる",dojo:"体重を記録するだけでもOK",mini:"",news:"週1回、記事を2〜3本"};
+const RING_TIP={academy:"今日のレッスンを1話だけ読む",shugyo:"ホームの「今日の巻物5問」から",senmon:"クイズ/遊ぶの専門医タブで5問",owarai:"1会話だけ開いてみる",dojo:"体重を記録するだけでもOK",mini:"",news:"週1回、記事を2〜3本",eigo:"英語の巻物を開いて、Word Legendを少しだけ"};
 function last30(a){ const set=new Set(appDays(a).map(normDay)); let n=0; const d=new Date(); for(let i=0;i<30;i++){ if(set.has(dkey(d))) n++; d.setDate(d.getDate()-1);} return n; }
 function ringBlock(){
   const L=S.hub.map(a=>({a,n:last30(a)})); if(!L.length) return "";
@@ -1841,7 +1949,7 @@ function ringBlock(){
       <ul class="rg-l">${[...L].reverse().map(x=>`<li><i style="background:${x.a.color}">${x.a.mark}</i><span>${x.a.name}</span><b>${x.n}<small>/30日</small></b></li>`).join("")}</ul>
       <ul class="rg-tip">${tips.join("")}</ul>
       <p class="rg-note">内側から1本ずつ各アプリ。1周＝30日。</p>
-    </div>`;
+    </div>${egBreak()}`;
 }
 function ringAnim(){ const go=()=>document.querySelectorAll(".rg-arc").forEach(c=>c.style.strokeDashoffset=c.dataset.off);
   if(matchMedia("(prefers-reduced-motion: reduce)").matches){ document.querySelectorAll(".rg-arc").forEach(c=>c.style.transition="none"); go(); } else requestAnimationFrame(()=>requestAnimationFrame(go)); }
