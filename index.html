@@ -541,6 +541,7 @@ body.k5-lock{overflow:hidden}
 .lamps{cursor:default}.lamps i{position:relative;width:22px;height:22px;font-size:11px;cursor:pointer}
 .brand .lamps{gap:6px}.lamps i::after{content:"";position:absolute;inset:-12px -3px}
 .lamps.many i{width:16px;height:16px;font-size:9px}.lamps.many i::after{inset:-14px -2px}
+.brand .lamps.n7{gap:4px}.lamps.n7 i{width:19px;height:19px;font-size:10px}.lamps.n7 i::after{inset:-12px -2px}
 /* 押しやすさ・読みやすさ */
 .menu-btn{width:44px;height:44px;padding:11px;margin:-5px}
 .hub-h .back,.home-cal .hub-h .back{padding:9px 11px;font-size:13px}
@@ -757,7 +758,8 @@ const HUB_DEFAULT = [
   {id:"senmon",  name:"小児科専門医",    mark:"専", color:"#d4ff3a", url:"https://20qolufiofleity14-lab.github.io/democratccc/", days:[]},
   {id:"owarai",  name:"お笑い会話",      mark:"笑", color:"#ffb547", url:"https://20qolufiofleity14-lab.github.io/owarasss/", days:[]},
   {id:"dojo",    name:"PRIME",           mark:"P",  color:"#e8322e", url:"https://20qolufiofleity14-lab.github.io/PRIME/", days:[]},
-  {id:"mini",    name:"ミニ置き場",      mark:"ミ", color:"#9b8cff", url:"https://20qolufiofleity14-lab.github.io/Index/", days:[]}
+  {id:"mini",    name:"ミニ置き場",      mark:"ミ", color:"#9b8cff", url:"https://20qolufiofleity14-lab.github.io/Index/", days:[]},
+  {id:"news",    name:"週刊ENDO通信",    mark:"通", color:"#2ee59d", url:"https://20qolufiofleity14-lab.github.io/end-weekly/", days:[]}
 ];
 try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -770,7 +772,7 @@ if(!S.hubAdded) S.hubAdded={};
 /* PRIMEは独立リポジトリへ移動：古いリンク（dojo/）を新しいURLに置き換える */
 { const pr=S.hub.find(x=>x.id==="dojo"); if(pr && (pr.url==="dojo/"||/\/dojo\/?$/.test(pr.url||""))){ pr.url="https://20qolufiofleity14-lab.github.io/PRIME/"; pr.name="PRIME"; pr.mark="P"; pr.color="#e8322e"; } }
 { const mi=S.hub.find(x=>x.id==="mini"); if(mi && /\/index\/?$/.test(mi.url||"")) mi.url="https://20qolufiofleity14-lab.github.io/Index/"; }
-HUB_DEFAULT.forEach(d=>{ if((d.id==="dojo"||d.id==="mini") && !S.hubAdded[d.id] && !S.hub.find(x=>x.id===d.id)){ S.hub.push(JSON.parse(JSON.stringify(d))); } if(d.id==="dojo"||d.id==="mini") S.hubAdded[d.id]=1; });
+HUB_DEFAULT.forEach(d=>{ if((d.id==="dojo"||d.id==="mini"||d.id==="news") && !S.hubAdded[d.id] && !S.hub.find(x=>x.id===d.id)){ S.hub.push(JSON.parse(JSON.stringify(d))); } if(d.id==="dojo"||d.id==="mini"||d.id==="news") S.hubAdded[d.id]=1; });
 save();
 /* 同じ github.io に置いた各アプリの記録を読んで、やった日を自動で付ける */
 function normDay(k){ const m=String(k).match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/); return m? (+m[1])+"-"+(+m[2])+"-"+(+m[3]) : null; }
@@ -791,6 +793,9 @@ const DETECT = {
   dojo(){ const o=readLS("prime_30s_v1"); if(!o||!o.log) return {days:[],info:""};
     const out=Object.keys(o.log).filter(k=>o.log[k]&&o.log[k].lv>0);
     return {days:out, info: out.length? "トレーニング "+out.length+"回":""}; },
+  news(){ const o=readLS("endo_news_v1")||{}; const lg=o.log||{}; const out=Object.keys(lg).filter(k=>lg[k]&&lg[k].length);
+    let n=0; for(const k in lg) n+=(lg[k]||[]).length;
+    return {days:out, info: n? "読んだ記事 "+n+"本":""}; },
   mini(){ const o=readLS("mini.log"); if(!o) return {days:[],info:""};
     const out=Object.keys(o).filter(k=>o[k]&&o[k].length);
     return {days:out, info: out.length? "開いた日 "+out.length+"日":""}; }
@@ -812,7 +817,7 @@ function appStreak(a){
 /* ミニ置き場は「開いただけ」なので、2026-11-05 からは継続日数に数えない（それより前の日は途切れないよう従来どおり） */
 const MINI_CUT=new Date(2026,10,5);
 function unionDays(){ const s=new Set(S.days); S.hub.forEach(a=>{ if(a.self) return;
-  appDays(a).forEach(d=>{ if(a.id==="mini"){ const p=String(d).split("-").map(Number); if(new Date(p[0],p[1]-1,p[2])>=MINI_CUT) return; } s.add(d); }); }); return s; }
+  appDays(a).forEach(d=>{ if(a.id==="news") return; /* ENDO通信は週1の読み物なのでランプだけ点け、継続日数には数えない */ if(a.id==="mini"){ const p=String(d).split("-").map(Number); if(new Date(p[0],p[1]-1,p[2])>=MINI_CUT) return; } s.add(d); }); }); return s; }
 function unionStreak(){ const set=unionDays(); try{ for(const k in W.freeze) set.add(k); }catch(e){} let n=0; const d=new Date(); if(!set.has(dkey(d))) d.setDate(d.getDate()-1); while(set.has(dkey(d))){ n++; d.setDate(d.getDate()-1);} return n; }
 function monthDays(y,m){ return [...unionDays()].filter(s=>s.startsWith(y+"-"+(m+1)+"-")).length; }
 const STAR_DAYS=[3,7,12,18,25];
@@ -1345,7 +1350,7 @@ function hdrLamps(){ const el=document.getElementById("hdrLamps"); if(!el||!Arra
   const lit=a=>new Set(appDays(a)).has(t) || (a.id==="dojo"&&prW); /* PRIMEは体重を記録しただけでも点灯（継続日数には数えない） */
   el.innerHTML=S.hub.map(a=>{ const on=lit(a);
     return `<i class="${on?"on":""}" data-lamp="${a.id}" role="button" tabindex="0" style="--c:${a.color}" aria-label="${a.name}${on?"：今日済み":"：まだ"}（タップで今日の分へ）">${a.mark}</i>`; }).join("");
-  el.classList.toggle("many", S.hub.length>7);
+  el.classList.toggle("many", S.hub.length>7); el.classList.toggle("n7", S.hub.length===7);
   el.setAttribute("aria-label","今日："+S.hub.map(a=>a.name+(lit(a)?"済み":"まだ")).join("、"));
 }
 /* ランプを押すと、そのアプリの「今日の分」へ直行（読=今日のレッスン／巻=5問／専=専門医5問／P=体重入力／ほかはアプリを開く） */
