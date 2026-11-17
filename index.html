@@ -870,7 +870,7 @@ function wsave(){ W.bal=walletBalance(); W.updated=Date.now(); try{ localStorage
 const EARN_RULES=[
   ["アカデミーを開く","1"],["アカデミーで1話読む","3（2話目から +2、1日 +6まで）"],
   ["修行巻物を解く","3 ＋10問ごとに +1（+3まで）"],["小児科専門医","3"],["お笑い会話","2"],
-  ["PRIME 筋トレ","ミニ 2／ふつう 4／がっつり 6"],["PRIME 体重・3行日記","各 1"],["PRIME 栄養クイズ","5問で 1"],["ミニ置き場","1"],["ミニゲーム","クリア 2（1日3回まで）"],["バイト（1回）",String(SHIFT_COIN)]
+  ["PRIME 筋トレ","ミニ 2／ふつう 4／がっつり 6"],["PRIME 体重・3行日記","各 1"],["PRIME 栄養クイズ","5問で 1"],["ミニ置き場","1"],["週刊ENDO通信","記事1本ごとに 1（1日 5まで）"],["ミニゲーム","クリア 2（1日3回まで）"],["バイト（1回）",String(SHIFT_COIN)]
 ];
 function earnByDay(){
   const m={}; const add=(d,src,c)=>{ d=normDay(d); if(!d||!(c>0)) return; (m[d]=m[d]||{})[src]=((m[d]||{})[src]||0)+c; };
@@ -887,6 +887,10 @@ function earnByDay(){
   for(const k in (pr.w||{})) if(pr.w[k]) add(k,"PRIME",1);
   for(const k in (pr.good||{})) if(Array.isArray(pr.good[k])&&pr.good[k].some(x=>x)) add(k,"PRIME",1);
   for(const k in (pr.fq||{})) if(pr.fq[k]&&pr.fq[k].n>=5) add(k,"PRIME",1);
+  { const nw=(readLS("endo_news_v1")||{}).log||{}; const seen=new Set(), per={};
+    Object.keys(nw).map(k=>[normDay(k),nw[k]]).filter(x=>x[0]).sort((x,y)=>{const p=s=>s.split("-").map(Number);const a=p(x[0]),c=p(y[0]);return a[0]-c[0]||a[1]-c[1]||a[2]-c[2];})
+      .forEach(([d,ids])=>(ids||[]).forEach(id=>{ if(seen.has(id)) return; seen.add(id); per[d]=(per[d]||0)+1; }));
+    for(const d in per) add(d,"ENDO通信",Math.min(5,per[d])); }
   const mi=readLS("mini.log")||{}; for(const k in mi) if(mi[k]&&mi[k].length) add(k,"ミニ置き場",1);
   const pg=readLS("pochiDojoLog2")||{}; for(const k in (pg.coinDays||{})) add(k,"ミニゲーム",2*Math.min(3,+pg.coinDays[k]||0));
   for(const k in W.shift) if(W.shift[k]) add(k,"バイト",SHIFT_COIN*(+W.shift[k]||1));
@@ -1949,7 +1953,7 @@ function settings(){
 
 /* ---------- 引き継ぎ（同じgithub.ioの全アプリの記録をまとめて移す） ---------- */
 const XFER_SKIP=["hub_home_url"];
-const XFER_NAMES={"mini.log":"ミニ置き場","endo_academy_v1":"内分泌アカデミー","shugyo_endo_v2":"修行巻物","shugyo_habit_v1":"修行巻物（習慣）","senmoni_scroll_v1":"小児科専門医","owarai-makimono-v1":"お笑い会話","prime_30s_v1":"PRIME","lab_wallet_v1":"コイン財布"};
+const XFER_NAMES={"mini.log":"ミニ置き場","endo_academy_v1":"内分泌アカデミー","shugyo_endo_v2":"修行巻物","shugyo_habit_v1":"修行巻物（習慣）","senmoni_scroll_v1":"小児科専門医","owarai-makimono-v1":"お笑い会話","prime_30s_v1":"PRIME","lab_wallet_v1":"コイン財布","endo_news_v1":"週刊ENDO通信"};
 function xferExport(){ const o={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(!XFER_SKIP.includes(k)) o[k]=localStorage.getItem(k); }
   return "EAX1:"+btoa(unescape(encodeURIComponent(JSON.stringify(o)))); }
 /* 両方の端末の記録を足し合わせる：オブジェクトは中身ごと合体、数は大きいほう、配列は重複なしで合体 */
