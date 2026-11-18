@@ -607,7 +607,7 @@ body.k5-lock{overflow:hidden}
 .eg-sub{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);margin:8px 14px 0}
 .eg.open{padding:0 10px}
 .eg-rod{position:relative;height:22px;border-radius:11px;background:linear-gradient(180deg,#f0dfb4,#c9a86a 60%,#9c7a43);box-shadow:inset 0 2px 2px rgba(255,255,255,.4),0 4px 10px rgba(0,0,0,.45);z-index:2}
-.eg-rod.top{cursor:pointer}.eg-rod .eg-knob{height:32px;margin-top:-16px;width:14px}
+.eg-rod.eg-t{cursor:pointer}.eg-rod .eg-knob{height:32px;margin-top:-16px;width:14px}
 .eg-paper{position:relative;margin:-6px 8px;padding:20px 16px 18px;color:#3a2410;transform-origin:top;animation:egUnroll .55s cubic-bezier(.2,.8,.2,1);
   background:radial-gradient(ellipse at 20% 10%,rgba(255,255,255,.35),transparent 60%),linear-gradient(180deg,#f6ebcf,#ecd9aa 70%,#e2c98f);box-shadow:inset 0 0 30px rgba(120,80,30,.25)}
 @keyframes egUnroll{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
@@ -1295,7 +1295,7 @@ function eigoCard(){
     <div class="eg-sub"><span>${n? (both?"ベース＋Dさん 両方できた":"今日はできた · あと1つで両方"):"タップでひらく · どれか1つでOK"}</span><span>英語 ${st}日連続</span></div>
   </div>`;
   return `<div class="eg open">
-    <div class="eg-rod top" id="egClose" role="button" tabindex="0" aria-label="巻物を閉じる"><span class="eg-knob l"></span><span class="eg-knob r"></span></div>
+    <div class="eg-rod eg-t" id="egClose" role="button" tabindex="0" aria-label="巻物を閉じる"><span class="eg-knob l"></span><span class="eg-knob r"></span></div>
     <div class="eg-paper">
       <div class="eg-h"><em>今日のお題</em><b>${pk.n}</b><small>${pk.s} · 最近やってないものから選びました</small>
         <a class="eg-go" href="${EG_URL}">D's Premium Library をひらく →</a></div>
@@ -1303,7 +1303,7 @@ function eigoCard(){
       <div class="eg-list">${EG_ITEMS.map(x=>`<button class="eg-it ${t.includes(x.id)?"on":""} ${x.id===pk.id?"pick":""} ${x.base?"base":""}" data-eg="${x.id}"><i>${t.includes(x.id)?"✓":""}</i><span><b>${x.n}</b><small>${x.base?"ベース · 1日ちょっとでOK":x.s}${x.id===pk.id?" · 今日のお題":""}</small></span></button>`).join("")}</div>
       <div class="eg-foot">${n? (both?"ベース＋Dさん、両方できた。最高の日。":gotPick?"お題クリア。これで今日は十分。":"今日の分は記録しました。"):"5分だけでも、やったら付けよう。"} · 英語 ${st}日連続</div>
     </div>
-    <div class="eg-rod bot"><span class="eg-knob l"></span><span class="eg-knob r"></span></div>
+    <div class="eg-rod eg-b"><span class="eg-knob l"></span><span class="eg-knob r"></span></div>
   </div>`;
 }
 function bindEigo(){
