@@ -1784,11 +1784,7 @@ const GICON={
     <circle cx="24" cy="33" r="3" fill="#2a1406"/><circle cx="40" cy="33" r="3" fill="#2a1406"/><circle cx="25" cy="32" r="1" fill="#fff"/><circle cx="41" cy="32" r="1" fill="#fff"/>
     <ellipse cx="32" cy="39" rx="3.5" ry="2.6" fill="#2a1406"/><path d="M28 43 q4 4 8 0" stroke="#2a1406" stroke-width="1.8" fill="none" stroke-linecap="round"/>
     <circle cx="18" cy="40" r="3" fill="#ff8fb8" opacity=".7"/><circle cx="46" cy="40" r="3" fill="#ff8fb8" opacity=".7"/></svg>`,
-  osd:`<svg viewBox="0 0 64 64"><ellipse cx="50" cy="40" rx="12" ry="8" fill="#140c06"/><ellipse cx="50" cy="38.5" rx="10" ry="5.5" fill="#000"/>
-    <circle cx="38" cy="30" r="11" fill="#fff4ea" stroke="#c9312f" stroke-width="3.5"/><path d="M31 21 l2 -5 l3 4z M45 21 l-2 -5 l-3 4z" fill="#c9312f"/>
-    <circle cx="35" cy="30" r="1.8" fill="#2a1406"/><circle cx="41.5" cy="30" r="1.8" fill="#2a1406"/><path d="M35 35 q3 -2 6 0" stroke="#2a1406" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-    <circle cx="14" cy="34" r="10" fill="#eaf2ff" stroke="#2a6fd6" stroke-width="3.5"/><circle cx="12" cy="33" r="1.7" fill="#0c2244"/><circle cx="18" cy="33" r="1.7" fill="#0c2244"/><path d="M12 38 q3 2 6 0" stroke="#0c2244" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-    <path d="M25 24 l4 3 l-1 -5 l4 2 l-2 -4" stroke="#ffe14a" stroke-width="2.2" fill="none" stroke-linejoin="round"/><path d="M3 30 h4 M2 35 h5 M3 40 h4" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/></svg>`,
+  osd:`<img src="/oshidashi/icon-512.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`,
 };
 const GAMES=[
   {id:"pochi", name:"ポチ道場", url:GAME_URL, bg:"linear-gradient(140deg,#ffcf6b,#ff7a59 55%,#ff4fa3)", tags:["5〜20秒","毎日"],
@@ -1796,7 +1792,7 @@ const GAMES=[
    st(){ const g=readLS("pochiDojoLog2")||{}, t=dkey(new Date()); const left=g.date===t? Math.max(0,3-(g.plays||0)) : 3;
      return { badge:left? `あと${left}回`:"今日はおしまい", hot:left>0, line:`今週 ${(g.days||[]).length}日 ・ 1日3回まで` }; } },
   {id:"osd", name:"オシダシ", url:OSD_URL, bg:"linear-gradient(140deg,#ffe08a,#f2a81e 50%,#c9312f)", tags:["15〜30分","ローグライト"],
-   desc:"押して、ぶつけて、落とす。デッキ構築×マス目の戦略",
+   desc:"放課後おしだし部。押して、ぶつけて、穴に落とす学園タクティクス",
    st(){ const b=readLS("oshidashi.best"), r=readLS("oshidashi.run"), m=readLS("oshidashi.meta")||{};
      const best=b&&b.score? `ベスト ${b.score}（${b.rank}）`:"まだ記録なし";
      return { badge: r? "続きから": (m.runs? "":"NEW"), hot:!!r, line: best+(m.wins? ` ・ 優勝${m.wins}回`:"") }; } },
