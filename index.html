@@ -1791,11 +1791,12 @@ const GAMES=[
    desc:"ルーレットで決まる6種のミニゲーム。クリアで2コイン",
    st(){ const g=readLS("pochiDojoLog2")||{}, t=dkey(new Date()); const left=g.date===t? Math.max(0,3-(g.plays||0)) : 3;
      return { badge:left? `あと${left}回`:"今日はおしまい", hot:left>0, line:`今週 ${(g.days||[]).length}日 ・ 1日3回まで` }; } },
-  {id:"osd", name:"オシダシ", url:OSD_URL, bg:"linear-gradient(140deg,#ffe08a,#f2a81e 50%,#c9312f)", tags:["15〜30分","ローグライト"],
+  {id:"osd", name:"オシダシ", url:OSD_URL, bg:"linear-gradient(140deg,#ffe08a,#f2a81e 50%,#c9312f)", tags:["5〜30分","ローグライト","日替わり"],
    desc:"放課後おしだし部。押して、ぶつけて、穴に落とす学園タクティクス",
    st(){ const b=readLS("oshidashi.best"), r=readLS("oshidashi.run"), m=readLS("oshidashi.meta")||{};
      const best=b&&b.score? `ベスト ${b.score}（${b.rank}）`:"まだ記録なし";
-     return { badge: r? "続きから": (m.runs? "":"NEW"), hot:!!r, line: best+(m.wins? ` ・ 優勝${m.wins}回`:"") }; } },
+     const d=new Date(), dk=d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(), done=!!(m.daily&&m.daily[dk]&&m.daily[dk].done);
+     return { badge: r? "続きから": (!m.runs? "NEW": done? "今日✓":"今日の放課後"), hot:!!r||(!done&&!!m.runs), line: best+(m.wins? ` ・ 優勝${m.wins}回`:"") }; } },
 ];
 function gameScreen(){
   if(!document.getElementById("gshelfCss")){ const st=document.createElement("style"); st.id="gshelfCss"; st.textContent=`
