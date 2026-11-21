@@ -1787,8 +1787,8 @@ function gameScreen(){
   bindQuizSwitch();
   const ob=document.getElementById("osdGo"); if(ob) ob.onclick=openOshidashi;
 }
-/* ---------- オシダシ（デッキ構築×マス目タクティクス）：本体はミニ置き場の tools/オシダシ.html。アプリの中で全画面で開く ---------- */
-const OSD_URL="/Index/tools/"+encodeURIComponent("オシダシ")+".html";
+/* ---------- オシダシ（デッキ構築×マス目タクティクス）：本体はリポジトリ oshidashi。アプリの中で全画面で開く ---------- */
+const OSD_URL="/oshidashi/";
 function osdTile(){
   const b=readLS("oshidashi.best"), r=readLS("oshidashi.run"), m=readLS("oshidashi.meta")||{};
   const best=b&&b.score? `自己ベスト <b style="color:var(--fg)">${b.score}（${b.rank}）</b>`:"まだ記録なし";
