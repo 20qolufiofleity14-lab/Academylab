@@ -1775,44 +1775,77 @@ const GAME_URL="/Index/tools/"+encodeURIComponent("ポチ道場")+".html";
 let quizMode=(["quiz","game","senmon","fuel"].includes(S.qm)? S.qm : "quiz"); /* 前回開いていたタブを覚える */
 function quizSwitch(){ return `<div class="tchips" role="tablist"><button class="tchip ${quizMode==="quiz"?"on":""}" data-qm="quiz">クイズ</button><button class="tchip ${quizMode==="game"?"on":""}" data-qm="game">ミニゲーム</button><button class="tchip ${quizMode==="senmon"?"on":""}" data-qm="senmon">小児科専門医</button><button class="tchip ${quizMode==="fuel"?"on":""}" data-qm="fuel">栄養</button></div>`; }
 function bindQuizSwitch(){ app.querySelectorAll("[data-qm]").forEach(b=>b.onclick=()=>{ quizMode=b.dataset.qm; S.qm=quizMode; save(); quiz(); }); }
-function gameScreen(){
-  const g=readLS("pochiDojoLog2")||{}, t=dkey(new Date());
-  const left=g.date===t? Math.max(0,3-(g.plays||0)) : 3;
-  const used=(g.days||[]).length;
-  app.innerHTML = `<section class="screen"><div><div class="eyebrow">MINI GAME</div><h1 class="title">ミニゲーム</h1></div>${quizSwitch()}
-    <div class="tile"><p style="margin:0 0 10px">5〜20秒で終わる日替わりゲーム。クリアで <b>2コイン</b>（1日3回まで）。今週使う日が増えるほど難しくなります。</p>
-      <div style="display:flex;gap:16px;margin-bottom:12px;font-size:13px;color:var(--muted)"><span>今日の残り <b style="color:var(--fg)">${left}/3</b></span><span>今週使った日 <b style="color:var(--fg)">${used}日</b></span></div>
-      <a class="cta" href="${GAME_URL}" style="display:inline-block;text-decoration:none">ミニゲームを始める</a></div>
-    ${osdTile()}</section>`;
-  bindQuizSwitch();
-  const ob=document.getElementById("osdGo"); if(ob) ob.onclick=openOshidashi;
-}
-/* ---------- オシダシ（デッキ構築×マス目タクティクス）：本体はリポジトリ oshidashi。アプリの中で全画面で開く ---------- */
+/* ---------- ゲーム棚：GAMES に1行足せばカードが増える。どれもアプリの中で全画面で開く ---------- */
 const OSD_URL="/oshidashi/";
-function osdTile(){
-  const b=readLS("oshidashi.best"), r=readLS("oshidashi.run"), m=readLS("oshidashi.meta")||{};
-  const best=b&&b.score? `自己ベスト <b style="color:var(--fg)">${b.score}（${b.rank}）</b>`:"まだ記録なし";
-  const wins=m.wins? `<span>優勝 <b style="color:var(--fg)">${m.wins}回</b></span>`:"";
-  return `<div class="tile" style="margin-top:12px"><p style="margin:0 0 4px;font-weight:800;font-size:17px">オシダシ</p>
-    <p style="margin:0 0 10px">押して、ぶつけて、落とす。デッキ構築×マス目のローグライト。1回15〜30分、途中でやめても続きから遊べます。</p>
-    <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px;font-size:13px;color:var(--muted)"><span>${best}</span>${wins}${r?'<span>続きあり</span>':''}</div>
-    <button class="cta" id="osdGo" style="border:0;font:inherit;cursor:pointer">${r?"続きから遊ぶ":"オシダシを始める"}</button></div>`;
+const GICON={
+  pochi:`<svg viewBox="0 0 64 64"><path d="M14 22 L18 6 L28 17Z" fill="#c96a1b"/><path d="M50 22 L46 6 L36 17Z" fill="#c96a1b"/><path d="M17 18 L19 10 L25 16Z" fill="#ffd2b0"/><path d="M47 18 L45 10 L39 16Z" fill="#ffd2b0"/>
+    <ellipse cx="32" cy="34" rx="22" ry="20" fill="#e98a2c"/><ellipse cx="32" cy="42" rx="14" ry="11" fill="#fff4e6"/>
+    <rect x="10" y="20" width="44" height="6" rx="3" fill="#ff4fa3"/><path d="M52 23 l8 -4 v9z" fill="#ff4fa3"/>
+    <circle cx="24" cy="33" r="3" fill="#2a1406"/><circle cx="40" cy="33" r="3" fill="#2a1406"/><circle cx="25" cy="32" r="1" fill="#fff"/><circle cx="41" cy="32" r="1" fill="#fff"/>
+    <ellipse cx="32" cy="39" rx="3.5" ry="2.6" fill="#2a1406"/><path d="M28 43 q4 4 8 0" stroke="#2a1406" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <circle cx="18" cy="40" r="3" fill="#ff8fb8" opacity=".7"/><circle cx="46" cy="40" r="3" fill="#ff8fb8" opacity=".7"/></svg>`,
+  osd:`<svg viewBox="0 0 64 64"><ellipse cx="50" cy="40" rx="12" ry="8" fill="#140c06"/><ellipse cx="50" cy="38.5" rx="10" ry="5.5" fill="#000"/>
+    <circle cx="38" cy="30" r="11" fill="#fff4ea" stroke="#c9312f" stroke-width="3.5"/><path d="M31 21 l2 -5 l3 4z M45 21 l-2 -5 l-3 4z" fill="#c9312f"/>
+    <circle cx="35" cy="30" r="1.8" fill="#2a1406"/><circle cx="41.5" cy="30" r="1.8" fill="#2a1406"/><path d="M35 35 q3 -2 6 0" stroke="#2a1406" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <circle cx="14" cy="34" r="10" fill="#eaf2ff" stroke="#2a6fd6" stroke-width="3.5"/><circle cx="12" cy="33" r="1.7" fill="#0c2244"/><circle cx="18" cy="33" r="1.7" fill="#0c2244"/><path d="M12 38 q3 2 6 0" stroke="#0c2244" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M25 24 l4 3 l-1 -5 l4 2 l-2 -4" stroke="#ffe14a" stroke-width="2.2" fill="none" stroke-linejoin="round"/><path d="M3 30 h4 M2 35 h5 M3 40 h4" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/></svg>`,
+};
+const GAMES=[
+  {id:"pochi", name:"ポチ道場", url:GAME_URL, bg:"linear-gradient(140deg,#ffcf6b,#ff7a59 55%,#ff4fa3)", tags:["5〜20秒","毎日"],
+   desc:"ルーレットで決まる6種のミニゲーム。クリアで2コイン",
+   st(){ const g=readLS("pochiDojoLog2")||{}, t=dkey(new Date()); const left=g.date===t? Math.max(0,3-(g.plays||0)) : 3;
+     return { badge:left? `あと${left}回`:"今日はおしまい", hot:left>0, line:`今週 ${(g.days||[]).length}日 ・ 1日3回まで` }; } },
+  {id:"osd", name:"オシダシ", url:OSD_URL, bg:"linear-gradient(140deg,#ffe08a,#f2a81e 50%,#c9312f)", tags:["15〜30分","ローグライト"],
+   desc:"押して、ぶつけて、落とす。デッキ構築×マス目の戦略",
+   st(){ const b=readLS("oshidashi.best"), r=readLS("oshidashi.run"), m=readLS("oshidashi.meta")||{};
+     const best=b&&b.score? `ベスト ${b.score}（${b.rank}）`:"まだ記録なし";
+     return { badge: r? "続きから": (m.runs? "":"NEW"), hot:!!r, line: best+(m.wins? ` ・ 優勝${m.wins}回`:"") }; } },
+];
+function gameScreen(){
+  if(!document.getElementById("gshelfCss")){ const st=document.createElement("style"); st.id="gshelfCss"; st.textContent=`
+    .gshelf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:4px}
+    .gcard{position:relative;display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:10px 10px 12px;
+      color:inherit;font:inherit;text-align:left;cursor:pointer;transition:transform .12s;-webkit-tap-highlight-color:transparent}
+    .gcard:active{transform:scale(.96)}
+    .gart{position:relative;aspect-ratio:1/1;border-radius:16px;display:flex;align-items:center;justify-content:center;overflow:hidden;
+      box-shadow:inset 0 -6px 0 rgba(0,0,0,.18),inset 0 2px 0 rgba(255,255,255,.35)}
+    .gart::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.45),transparent 45%)}
+    .gart svg{width:74%;height:74%;position:relative;filter:drop-shadow(0 4px 0 rgba(0,0,0,.2));animation:gbob 2.6s ease-in-out infinite}
+    .gcard:nth-child(2n) .gart svg{animation-delay:-1.3s}
+    @keyframes gbob{50%{transform:translateY(-4px) rotate(-2deg)}}
+    @media (prefers-reduced-motion:reduce){.gart svg{animation:none}}
+    .gbadge{position:absolute;top:8px;right:8px;background:rgba(15,11,26,.82);color:#fff;font-size:10px;font-weight:800;padding:3px 7px;border-radius:999px}
+    .gbadge.hot{background:var(--lime);color:#0f0b1a}
+    .gname{font-weight:800;font-size:15px;margin-top:2px}
+    .gdesc{font-size:11.5px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:3em}
+    .gtags{display:flex;gap:4px;flex-wrap:wrap}.gtags span{font-size:10px;border:1px solid var(--line);border-radius:999px;padding:1px 7px;color:var(--muted)}
+    .gline{font-size:11px;color:var(--dim,var(--muted));font-variant-numeric:tabular-nums}
+    .gsoon{border-style:dashed;cursor:default;justify-content:center;align-items:center;text-align:center;opacity:.75}
+    .gsoon .gart{width:56%;background:transparent;box-shadow:none;border:2px dashed var(--line)}
+    .gsoon .gart::before{display:none}`; document.head.appendChild(st); }
+  const cards=GAMES.map((g,i)=>{ const s=g.st();
+    return `<button class="gcard" data-g="${i}"><div class="gart" style="background:${g.bg}">${GICON[g.id]||""}${s.badge?`<span class="gbadge ${s.hot?"hot":""}">${s.badge}</span>`:""}</div>
+      <div class="gname">${g.name}</div><div class="gdesc">${g.desc}</div><div class="gtags">${g.tags.map(t=>`<span>${t}</span>`).join("")}</div><div class="gline">${s.line}</div></button>`; }).join("");
+  app.innerHTML = `<section class="screen"><div><div class="eyebrow">MINI GAME</div><h1 class="title">ミニゲーム</h1></div>${quizSwitch()}
+    <div class="gshelf">${cards}<div class="gcard gsoon"><div class="gart"><span style="font-size:28px;opacity:.6">＋</span></div><div class="gname" style="font-size:13px">次のゲーム</div><div class="gdesc" style="min-height:0">準備中</div></div></div></section>`;
+  bindQuizSwitch();
+  app.querySelectorAll(".gcard[data-g]").forEach(b=>b.onclick=()=>openGame(GAMES[+b.dataset.g]));
 }
-function openOshidashi(){
-  if(document.getElementById("osdOv")) return;
-  const ov=document.createElement("div"); ov.id="osdOv";
-  ov.style.cssText="position:fixed;inset:0;z-index:9999;background:#1b1712;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)";
-  ov.innerHTML=`<div style="display:flex;align-items:center;gap:8px;height:40px;padding:0 10px;background:#26201a;color:#f4ead8;flex:none">
-      <button id="osdX" style="background:none;border:0;color:#f4ead8;font:inherit;font-size:15px;font-weight:700;padding:8px 4px;cursor:pointer">‹ アカデミーに戻る</button>
-      <span style="margin-left:auto;font-size:12px;opacity:.6">途中の階は自動で保存</span></div>
-    <iframe src="${OSD_URL}" title="オシダシ" style="flex:1;width:100%;border:0;display:block" allow="autoplay"></iframe>`;
+function openGame(g){
+  if(document.getElementById("gameOv")) return;
+  const ov=document.createElement("div"); ov.id="gameOv";
+  ov.style.cssText="position:fixed;inset:0;z-index:9999;background:#0f0b1a;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)";
+  ov.innerHTML=`<div style="display:flex;align-items:center;gap:8px;height:40px;padding:0 10px;background:#17122a;color:#f4ead8;flex:none;border-bottom:1px solid rgba(255,255,255,.08)">
+      <button id="gameX" style="background:none;border:0;color:#f4ead8;font:inherit;font-size:15px;font-weight:700;padding:8px 4px;cursor:pointer">‹ アカデミーに戻る</button>
+      <span style="margin-left:auto;font-size:12px;opacity:.6">${g.name}</span></div>
+    <iframe src="${g.url}" title="${g.name}" style="flex:1;width:100%;border:0;display:block" allow="autoplay"></iframe>`;
   document.body.appendChild(ov);
   const prev=document.body.style.overflow; document.body.style.overflow="hidden";
-  try{ history.pushState({osd:1},""); }catch(e){}
+  try{ history.pushState({gameOv:1},""); }catch(e){}
   const close=()=>{ if(!ov.isConnected) return; ov.remove(); document.body.style.overflow=prev; window.removeEventListener("popstate",onPop); if(quizMode==="game") gameScreen(); };
   const onPop=()=>close();
   window.addEventListener("popstate",onPop);
-  document.getElementById("osdX").onclick=()=>{ if(history.state&&history.state.osd){ history.back(); } else close(); };
+  document.getElementById("gameX").onclick=()=>{ if(history.state&&history.state.gameOv){ history.back(); } else close(); };
 }
 /* ---------- 小児科専門医を5問：問題は小児科専門医アプリのページから読み、答えはそのアプリの記録（senmoni_scroll_v1）に書く ---------- */
 const SM_KEY="senmoni_scroll_v1", SM_INT=[1,3,7,21,60];
